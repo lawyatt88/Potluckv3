@@ -85,9 +85,9 @@ const createApp = () => {
 
 // const ipcAddr = "/Users/natalieung/blockchaintest/privEth/geth.ipc"
 // const configPort = config.get('port');
-const configPort = 4001
+// const configPort = 4001
 
-const PORT = process.env.PORT || configPort || 4000;
+const PORT = (process.env.PORT || 4001);
 
 const startListening = () => {
   // start listening (and create a 'server' object representing our server)
