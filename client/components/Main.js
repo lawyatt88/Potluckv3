@@ -18,19 +18,23 @@ const Main = (props) => {
 
   let title
   switch(location.pathname) {
-    case '/': title = 'POTLUCK' 
+    case '/': title = 'POTLUCK'
     break;
-    case '/community': title = 'Community Board' 
+    case '/login': title = 'POTLUCK'
     break;
-    case '/market': title = 'Market' 
+    case '/signup': title = 'POTLUCK'
     break;
-    case '/basket': title = 'Basket' 
+    case '/community': title = 'Community Board'
     break;
-    case '/inbox': title = 'Inbox' 
+    case '/market': title = 'Market'
     break;
-    case '/account': title = 'Account' 
+    case '/basket': title = 'Basket'
     break;
-    case '/pantry': title = 'My Pantry' 
+    case '/inbox': title = 'Inbox'
+    break;
+    case '/account': title = 'Account'
+    break;
+    case '/pantry': title = 'My Pantry'
     break;
   }
 
