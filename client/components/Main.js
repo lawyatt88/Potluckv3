@@ -13,7 +13,7 @@ import {logout, stopGethInst} from '../store'
 const Main = (props) => {
 
   console.log('i am props', props)
-  const {children, handleClick, isLoggedIn, user, inbox, basket, stopGeth, match} = props
+  const {children, isLoggedIn, user, inbox, basket, match} = props
   console.log('LOCATION PATH', location.pathname)
 
   let title
@@ -36,13 +36,19 @@ const Main = (props) => {
     break;
     case '/pantry': title = 'My Pantry'
     break;
+    case '/login': title = 'POTLUCK' 
+    break;
+    case '/signup': title = 'POTLUCK' 
+    break;
+    default: title = "Let's make a swap!"
+
   }
 
 
 
   return (
     <div>
-      { location.pathname === '/' &&
+      { location.pathname === ('/' || '/login') &&
         <div id="title" className="main navbar fixed-top"><h1>{title}</h1></div>
       }{ location.pathname !== '/' &&
         <div id="title" className="navbar fixed-top"><h3>{title}</h3></div>
@@ -57,7 +63,6 @@ const Main = (props) => {
               <Link to="/basket" className="nav-item"><i className="fas fa-shopping-basket" />({basket.length})</Link>
               <Link to="/inbox" className="nav-item"><i className="fas fa-envelope" />({Object.keys(inbox).length})</Link>
               <Link to="/account" className="nav-item"><i className="fas fa-cog" /></Link>
-              <a href="/" onClick={(event) => handleClick(event, user, stopGeth)}>Logout</a>
             </nav>
         }
       <hr className="title-hr"/>
@@ -80,13 +85,7 @@ const mapState = (state) => {
 
 const mapDispatch = (dispatch) => {
   return {
-    handleClick (evt, user, stopGeth) {
-      dispatch(logout())
-      stopGeth(user)
-    },
-    stopGeth (user) {
-      dispatch(stopGethInst(user))
-    }
+    
   }
 }
 
@@ -99,6 +98,5 @@ export default withRouter(connect(mapState, mapDispatch)(Main))
  */
 Main.propTypes = {
   children: PropTypes.object,
-  handleClick: PropTypes.func.isRequired,
   isLoggedIn: PropTypes.bool.isRequired
 }

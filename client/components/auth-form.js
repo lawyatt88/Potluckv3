@@ -10,28 +10,29 @@ import {Link} from 'react-router-dom'
 const AuthForm = (props) => {
   const {name, displayName, handleSubmit, error} = props
 
+  let link = name === 'login' ? <Link to="/signup" >Need an account? Sign Up</Link> : <Link to="/login" >Already a user? Log In</Link>
+
   return (
     <div className="login">
-    <form onSubmit={handleSubmit} name={name}>
-      <div>
-        <label htmlFor="email"><small>Email</small></label>
-        <input name="email" type="text" />
-      </div>
-      <div>
-        <label htmlFor="password"><small>Password</small></label>
-        <input name="password" type="password" />
-      </div>
-      <div>
-        <button type="submit">{displayName}</button><br />
-        {
-          name === 'login' ?
-          <Link to="/signup">Click here to sign up!</Link> :
-          <Link to="/login">Click here to log in!</Link>
-        }
-      </div>
-      {error && error.response && <div> {error.response.data} </div>}
-    </form>
-  </div>
+      <form onSubmit={handleSubmit} name={name}>
+      <h3>{displayName}</h3>
+        <div>
+          <label htmlFor="email"><small>Email</small></label>
+          <input name="email" type="text" />
+        </div>
+        <div>
+          <label htmlFor="password"><small>Password</small></label>
+          <input name="password" type="password" />
+        </div>
+        <div>
+          <button className="btn btn-primary" type="submit">{displayName}</button>
+        </div>
+        <div className="container-fluid" >
+        {link}
+        </div>
+        {error && error.response && <div> {error.response.data} </div>}
+      </form>
+    </div>
   )
 }
 

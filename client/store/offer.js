@@ -24,9 +24,9 @@ export const removeFromOffer = itemId => ({ type: REMOVE_OFFER_ITEM, itemId })
  * THUNK CREATORS
  */
 export const updateContract = (items, contract, solicitor, solicitorId, currentUser) => dispatch => {
-    let contractAddress = contract.contractAddress
+    // let contractAddress = contract.contractAddress
     console.log("contract in updateContract: ", contract)
-    let allItems = items.map(item => item.name).join(', ');
+    // let allItems = items.map(item => item.name).join(', ');
     let itemIds = []
     items.forEach(itemObj => {itemIds.push(itemObj.id)})
     itemIds = itemIds.join(', ')
