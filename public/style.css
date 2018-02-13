@@ -59,6 +59,8 @@ body {
   .title-hr {
     margin-top: 0!important;
     height: 13vh;
+    padding-bottom: 1rem;
+    margin-bottom: 0;
   }
 
   .item-card, .request-ticket-card {
@@ -115,6 +117,16 @@ body {
     height: 110vh;
   }
 
+  option {
+    font-size: .75rem;
+  }
+  .requested-items {
+    text-align: center;
+  }
+  .requested-items>button{
+    margin-bottom: 1rem
+  }
+
   /**
   * LOGIN STYLE
   **/
@@ -158,3 +170,4 @@ body {
     width: 8%;
     height: auto;
   }
+

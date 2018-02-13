@@ -1,7 +1,8 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import PropTypes from 'prop-types'
-import { auth, fetchInbox } from '../store'
+import { auth } from '../store'
+import {Link} from 'react-router-dom'
 
 /**
  * COMPONENT
@@ -9,9 +10,12 @@ import { auth, fetchInbox } from '../store'
 const AuthForm = (props) => {
   const {name, displayName, handleSubmit, error} = props
 
+  let link = name === 'login' ? <Link to="/signup" >Need an account? Sign Up</Link> : <Link to="/login" >Already a user? Log In</Link>
+
   return (
     <div className="login">
       <form onSubmit={handleSubmit} name={name}>
+      <h3>{displayName}</h3>
         <div>
           <label htmlFor="email"><small>Email</small></label>
           <input name="email" type="text" />
@@ -21,7 +25,10 @@ const AuthForm = (props) => {
           <input name="password" type="password" />
         </div>
         <div>
-          <button type="submit">{displayName}</button>
+          <button className="btn btn-primary" type="submit">{displayName}</button>
+        </div>
+        <div className="container-fluid" >
+        {link}
         </div>
         {error && error.response && <div> {error.response.data} </div>}
       </form>

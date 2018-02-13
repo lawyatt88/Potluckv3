@@ -13,32 +13,42 @@ import {logout, stopGethInst} from '../store'
 const Main = (props) => {
 
   console.log('i am props', props)
-  const {children, handleClick, isLoggedIn, user, inbox, basket, stopGeth, match} = props
+  const {children, isLoggedIn, user, inbox, basket, match} = props
   console.log('LOCATION PATH', location.pathname)
 
   let title
   switch(location.pathname) {
-    case '/': title = 'POTLUCK' 
+    case '/': title = 'POTLUCK'
     break;
-    case '/community': title = 'Community Board' 
+    case '/login': title = 'POTLUCK'
     break;
-    case '/market': title = 'Market' 
+    case '/signup': title = 'POTLUCK'
     break;
-    case '/basket': title = 'Basket' 
+    case '/community': title = 'Community Board'
     break;
-    case '/inbox': title = 'Inbox' 
+    case '/market': title = 'Market'
     break;
-    case '/account': title = 'Account' 
+    case '/basket': title = 'Basket'
     break;
-    case '/pantry': title = 'My Pantry' 
+    case '/inbox': title = 'Inbox'
     break;
+    case '/account': title = 'Account'
+    break;
+    case '/pantry': title = 'My Pantry'
+    break;
+    case '/login': title = 'POTLUCK' 
+    break;
+    case '/signup': title = 'POTLUCK' 
+    break;
+    default: title = "Let's make a swap!"
+
   }
 
 
 
   return (
     <div>
-      { location.pathname === '/' &&
+      { location.pathname === ('/' || '/login') &&
         <div id="title" className="main navbar fixed-top"><h1>{title}</h1></div>
       }{ location.pathname !== '/' &&
         <div id="title" className="navbar fixed-top"><h3>{title}</h3></div>
@@ -53,7 +63,6 @@ const Main = (props) => {
               <Link to="/basket" className="nav-item"><i className="fas fa-shopping-basket" />({basket.length})</Link>
               <Link to="/inbox" className="nav-item"><i className="fas fa-envelope" />({Object.keys(inbox).length})</Link>
               <Link to="/account" className="nav-item"><i className="fas fa-cog" /></Link>
-              <a href="/" onClick={(event) => handleClick(event, user, stopGeth)}>Logout</a>
             </nav>
         }
       <hr className="title-hr"/>
@@ -76,13 +85,7 @@ const mapState = (state) => {
 
 const mapDispatch = (dispatch) => {
   return {
-    handleClick (evt, user, stopGeth) {
-      dispatch(logout())
-      stopGeth(user)
-    },
-    stopGeth (user) {
-      dispatch(stopGethInst(user))
-    }
+    
   }
 }
 
@@ -95,6 +98,5 @@ export default withRouter(connect(mapState, mapDispatch)(Main))
  */
 Main.propTypes = {
   children: PropTypes.object,
-  handleClick: PropTypes.func.isRequired,
   isLoggedIn: PropTypes.bool.isRequired
 }
