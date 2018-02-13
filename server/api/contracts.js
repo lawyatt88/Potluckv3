@@ -21,20 +21,24 @@ router.get('/completed', (req, res, next) => {
 
 router.post('/', (req, res, next) => {
   // contractAddress++
-
+console.log('HIIIIIII')
     Contract.create({contractAddress})
     .then(newContract => {
+      return Promise.all([newContract])
+    })
+    .then(newContract => {
+      console.log('HELLO?')
       return newContract.update({contractAddress: newContract.id})
     })
     .then(contract => {
         ContractAssociations.bulkCreate([{
             contractId: contract.id,
-            userId: req.body.currentUserId,
-            itemIds: req.body.itemIds
+            userId: req.body.currentUserId
         },
         {
             contractId: contract.id,
-            userId: req.body.soliciteeId
+            userId: req.body.soliciteeId,
+            itemIds: req.body.itemIds
         }])
         return contract
     })

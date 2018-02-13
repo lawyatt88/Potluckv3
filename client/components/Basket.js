@@ -79,7 +79,6 @@ const mapDispatch = (dispatch, ownProps) => {
     return {
         sendRequestHandler: (event, items, itemOwner, currentUser) => {
                 const soliciteeId = itemOwner
-                console.log("mapDispatch UserIpcAddr: ", currentUser)
                 console.log('ITEMS', items)
                 // dispatch(createContractWeb3(items, currentUser, soliciteeId))
                 dispatch(createContractApi(items, currentUser, soliciteeId))
