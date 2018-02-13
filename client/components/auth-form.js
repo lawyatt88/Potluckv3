@@ -1,8 +1,8 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import PropTypes from 'prop-types'
-import {withRouter, Link} from 'react-router-dom'
-import { auth, fetchInbox } from '../store'
+import { auth } from '../store'
+import {Link} from 'react-router-dom'
 
 /**
  * COMPONENT
@@ -10,7 +10,7 @@ import { auth, fetchInbox } from '../store'
 const AuthForm = (props) => {
   const {name, displayName, handleSubmit, error} = props
 
-  let link = location.pathname === '/login' ? <Link to="/signup" >Need an account? Sign Up</Link> : <Link to="/login" >Already a user? Log In</Link>
+  let link = name === 'login' ? <Link to="/signup" >Need an account? Sign Up</Link> : <Link to="/login" >Already a user? Log In</Link>
 
   return (
     <div className="login">
