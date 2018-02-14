@@ -5,25 +5,25 @@ import { fetchAllItems, fetchContractAssociations } from '../store'
 
 const InboxCard = (props) => {
     
-    const { request, requests, contracts, currentUser, items, inbox, otherUserId } = props
+    const { request, requests, contracts, currentUser, items, inbox, otherUser } = props
     console.log('im the request~', request)
     let displayMessage
 
-    const item = items.find(singleItem => +singleItem.userId === +otherUserId)
+    const item = items.find(singleItem => +singleItem.userId === +otherUser.id)
     
     const message = (currentContract) => {
       switch (currentContract.status) {
         case 'Created':
-          return `You have a new request from ${item.user.username}`
+          return `You have a new request from ${otherUser.username}`
           break;
         case 'FirstReview': // user2 is looking over user1's initial trade request
-          return `${item.user.username} is considering your request!`
+          return `${otherUser.username} is considering your request!`
           break;
         case 'SecondReview': // user1 reviews updated request and will confirm the trade with "Let's Swap!"
-          return `${item.user.username} has responded - confirm your trade!`
+          return `${otherUser.username} has responded - confirm your trade!`
           break;
         case 'Pending': // after user1 has confirmed the trade with "Let's Swap"
-          return `You and ${item.user.username} have agreed to trade...`
+          return `You and ${otherUser.username} have agreed to trade...`
           break;
         // case 'Completed':
         default:
@@ -54,9 +54,8 @@ const InboxCard = (props) => {
 const mapState = (state) => {
     return {
         items: state.market,
-        requests: state.inbox,
-        currentUser: state.user,
-        contracts: state.requests
+        inbox: state.inbox,
+        currentUser: state.user
     }
 }
 

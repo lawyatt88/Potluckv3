@@ -3,8 +3,8 @@ const { Item, Contract, ContractAssociations, User } = require("../db/models");
 
 router.get('/', (req, res, next) => {
     let { inbox, passport } = req.session
-    //instanciate map for inbox on session
-    let contractsByContractId = {}
+    //instanciate object for inbox on session
+    const contractsByContractId = {}
     //find contract IDs and status from associations contractIds
     const associationContractIds = new Set()
 
@@ -18,53 +18,43 @@ router.get('/', (req, res, next) => {
         //add unique contract IDs to set
         assocsByCurrentUser.forEach(association => associationContractIds.add(association.contractId))
 
-        let otherUserIdArr = []
+        let otherUserPromiseArr = [], contractPromiseArr = []
 
-        //compose inbox Map by contract ID
+        //compose inbox object by contract ID
         associationContractIds.forEach((contractId, v2, set) => {
             let contract, assocs, otherUser
+
+            //find all associations with current contract
             assocs = rAssociations.filter(association => +association.contractId === +contractId)
 
             //find other user by looking through assocs and filtering out current user
             //grabbing the other user's ID and finding them in the DB
             let otherUserAssocs = assocs.filter(assoc => +assoc.userId !== +passport.user)
-            otherUserIdArr.push(otherUserAssocs[0].userId)
+            otherUserPromiseArr.push(User.findById(otherUserAssocs[0].userId))
+
+            //find contract instance
+            contractPromiseArr.push(Contract.findById(contractId))
             
-            // finally compose object and add it to Map
+            // finally compose object and add it to object
+            // contractsByContractId.set(contractId, { associations: assocs })
             contractsByContractId[contractId] = { associations: assocs }
         })
-        return otherUserIdArr
+        return Promise.all([Promise.all(otherUserPromiseArr), Promise.all(contractPromiseArr)])
       })
-      .then( otherUserIdArr => {
-        otherUserPromiseArr = otherUserIdArr.map(otherUserId => {
-          return User.findById(otherUserId)
-        })
+      .then(([rOtherUsersArr, rContractArr]) => {
+        console.log('RESOLVED OTHER USERS', rOtherUsersArr)  //shows up correctly
+        console.log('RESOLVED CONTRACTS', rContractArr) //shows up correctly
+        // set user with appropriate contract key
+        for (var contractId in contractsByContractId) {
+          console.log(contractId)
+          contractsByContractId[contractId] = { ...contractsByContractId[contractId], otherUser: rOtherUsersArr.shift(), contract: rContractArr.shift() }
+        }
 
-        return Promise.all(otherUserPromiseArr)
-      })
-      .then(rOtherUsersArr => {
-        let contractPromiseArr = []
-        rOtherUsersArr.forEach(otherUser => {
-          associationContractIds.forEach((contractId, v2, set) => {
-            // finally compose object and add it to Map
-            contractPromiseArr.push(Contract.findById(contractId))
-            contractsByContractId[contractId] = { ...contractsByContractId[contractId], otherUser: otherUser }
-          })
-        })
-        return Promise.all(contractPromiseArr)
-      })
-      .then(rContractsArr => {
-        rContractsArr.forEach(contract => {
-          associationContractIds.forEach((contractId, v2, set) => {
-            // finally compose object and add it to Map
-            contractsByContractId[contractId] = { ...contractsByContractId[contractId], contract: contract }
-          })
-        })
         req.session.inbox = contractsByContractId
         return req.session.inbox
       })
       .then(newInbox => {
-        console.log('NEWiNBOX', newInbox)
+        console.log('newInbox', newInbox)
         res.json(newInbox)
       })
       .catch(next);

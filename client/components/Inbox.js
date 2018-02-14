@@ -4,13 +4,14 @@ import {connect} from 'react-redux'
 import {withRouter, Link} from 'react-router-dom'
 
 const Inbox = (props) => {
-    const { requests, contracts, currentUser, inbox } = props
-
-    let contractIds = Object.keys(requests)
+    const { currentUser, inbox } = props
+    console.log('the INBOX', inbox)
     let createdRequests = [], firstReviewRequests = [], secondReviewRequests = [], pendingRequests = [], completedRequests = [], canceledRequests = [];
-    console.log('CONTARCTS IN INBOX', contracts)
-    contractIds.forEach(contractId => {
-        let currentContract = contracts.find(contract => +contract.id === +contractId)
+    
+    for (var contractId in inbox) {
+        console.log(contractId)
+        let currentContract = inbox[contractId].contract
+        console.log('CURRENT CONTRACT', currentContract)
         switch (currentContract.status) {
             case 'Created':
                 createdRequests.push(currentContract)
@@ -33,10 +34,10 @@ const Inbox = (props) => {
             default:
                 createdRequests.push(currentContract)
         }
-    })
+    }
 
     let inboxBody
-    if (!Object.keys(requests).length) inboxBody = <h5>No current requests.</h5>
+    if (!Object.keys(inbox).length) inboxBody = <h5>No current requests.</h5>
     else inboxBody = (
         <div className="container">
             <h3>New Requests</h3>
@@ -48,7 +49,7 @@ const Inbox = (props) => {
                             return (
                                 <li key={request.id} className="request-ticket-card">
                                     <Link to={`/${request.id}`}>
-                                        <InboxCard request={request} otherUserId={requests[request.id].otherUserId} />
+                                        <InboxCard request={request} otherUser={inbox[request.id].otherUser} />
                                     </Link>
                                 </li>
                             )
@@ -66,7 +67,7 @@ const Inbox = (props) => {
                                 return (
                                     <li key={request.id} className="request-ticket-card">
                                         <Link to={`/${request.id}`}>
-                                            <InboxCard request={request} otherUserId={requests[request.id].otherUserId} />
+                                            <InboxCard request={request} otherUser={inbox[request.id].otherUser} />
                                         </Link>
                                     </li>
                                 )
@@ -77,7 +78,7 @@ const Inbox = (props) => {
                                 return (
                                     <li key={request.id} className="request-ticket-card">
                                         <Link to={`/${request.id}`}>
-                                            <InboxCard request={request} otherUserId={requests[request.id].otherUserId} />
+                                            <InboxCard request={request} otherUser={inbox[request.id].otherUser} />
                                         </Link>
                                     </li>
                                 )
@@ -95,7 +96,7 @@ const Inbox = (props) => {
                                 return (
                                     <li key={request.id} className="request-ticket-card">
                                         <Link to={`/${request.id}`}>
-                                            <InboxCard request={request} otherUserId={requests[request.id].otherUserId} />
+                                            <InboxCard request={request} otherUser={inbox[request.id].otherUser} />
                                         </Link>
                                     </li>
                                 )
@@ -112,7 +113,7 @@ const Inbox = (props) => {
                             return (
                                 <li key={request.id} className="request-ticket-card">
                                     <Link to={`/${request.id}`}>
-                                        <InboxCard request={request} otherUserId={requests[request.id].otherUserId} />
+                                        <InboxCard request={request} otherUser={inbox[request.id].otherUser} />
                                     </Link>
                                 </li>
                             )
@@ -128,9 +129,8 @@ const Inbox = (props) => {
 
 const mapState = (state) => {
     return {
-        requests: state.inbox,
+        inbox: state.inbox,
         currentUser: state.user,
-        contracts: state.requests
     }
 }
 
