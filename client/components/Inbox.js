@@ -8,7 +8,7 @@ const Inbox = (props) => {
 
     let contractIds = Object.keys(requests)
     let createdRequests = [], firstReviewRequests = [], secondReviewRequests = [], pendingRequests = [], completedRequests = [], canceledRequests = [];
-
+    console.log('CONTARCTS IN INBOX', contracts)
     contractIds.forEach(contractId => {
         let currentContract = contracts.find(contract => +contract.id === +contractId)
         switch (currentContract.status) {

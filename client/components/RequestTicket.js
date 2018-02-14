@@ -15,7 +15,9 @@ const RequestTicket = (props) => {
     const senderItems = items.filter(item => item.userId === senderId)
     const sender = senderItems[0].user
     const request = requests[contractId]
-    const reqAssociation = request.associations.find(assoc => assoc.userId !== currentUser.id)
+    const reqAssociation = request.associations.find(assoc => assoc.userId === currentUser.id)
+    console.log('REQASSOCIATION', reqAssociation)
+    console.log('REQUEST.ASSOCIATIONS', request.associations)
 
     let reqItemIds
     if (reqAssociation.itemIds) {
@@ -27,7 +29,7 @@ const RequestTicket = (props) => {
             return items.find(item => +item.id === +oneItemId)
         })
     }
-
+    console.log('REQCONTRACTITEMS', reqContractItems)
     const resAssociation = request.associations.find(assoc => assoc.userId === currentUser.id)
 
     let resItemIds

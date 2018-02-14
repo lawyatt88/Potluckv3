@@ -8,16 +8,16 @@ import { addToBasket, removeFromBasket, returnToMyMarketThunk, removeFromMyMarke
 
 const ItemCard = (props) => {
     const { currentUser, items, item, modalBody, modalIcon, inRequest, ownProps } = props
-    console.log('ITEMCARD ownPROPS', ownProps)
-    console.log('ITEMCARD PROPS', props)
+
     let modalButton, buttonText, clickHandler
 
     let inRequestTicket = ownProps.match.path === '/:id'
 
     const cardBody = singleItem => {
+        console.log('SINGLEITEM', singleItem)
             switch (props.path) {
                 case '/pantry':
-                console.log('SINGLEITEM', singleItem)
+                
                     buttonText = inRequestTicket ? <i className="fa fa-plus" aria-hidden="true" /> : <i className="fa fa-minus" aria-hidden="true" />
                     // clickHandler = event => props.handleAddToOffer(event, singleItem, currentUser.id)
                     clickHandler = inRequestTicket ? event => props.handleAddToOffer(event, singleItem, currentUser.id) : () => {}
@@ -45,7 +45,9 @@ const ItemCard = (props) => {
 
 
         console.log('clickHandler', clickHandler)
-        return (
+
+        let returnDisplay = 
+        (
             <div key={singleItem.id} className="row card-body-wrapper">
                 <div className="col-3">
                     <img src={`${singleItem.iconUrl}`} className="card-icon" />
@@ -62,9 +64,14 @@ const ItemCard = (props) => {
                 <div className="col-2" onClick={clickHandler}>{buttonText}</div>
             </div>
         )
+        console.log('RETURNDISPLAY', returnDisplay)
+        return returnDisplay
     }
 
+    console.log('ITEMS IN ITEMCARD', items)
+    console.log('ITEM IN ITEMCARD', item)
     const display = items ? items.map(ownersItem => cardBody(ownersItem)) : cardBody(item)
+    console.log('DISPLAY', display)
 
     return (
         <div className="card w-100">
