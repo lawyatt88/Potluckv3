@@ -5,40 +5,37 @@ import ItemCard from './ItemCard'
 import Pantry from './Pantry'
 import { fetchContractAssociations, updateContract, removeFromOffer, removeFromMyMarket, updateContractStatus, completeContractStatus } from '../store'
 
-const RequestTicket = (props) => {
-    console.log('PROPS FROM request ticket', props)
-    const { items, contractId, currentUser, offer, updateContractHandler, requests, contracts, approveSwapHandler, completeSwapHandler } = props
+const RespondingRequestTicket = (props) => {
+    console.log('PROPS FROM responder request ticket', props)
 
-    const contractInQuestion = contracts.find(contract => +contract.id === +contractId)
+    const { items, contractId, currentUser, offer, inbox, path, updateContractHandler, approveSwapHandler, completeSwapHandler, } = props
+    
+    //first items belong to otherUser
+    const contractInQuestion = inbox[+contractId].contract
+    const otherUserName = inbox[+contractId].otherUser.username
 
-    const senderId = requests[contractId].otherUserId
-    const senderItems = items.filter(item => item.userId === senderId)
-    const sender = senderItems[0].user
-    const request = requests[contractId]
-    const reqAssociation = request.associations.find(assoc => assoc.userId === currentUser.id)
-    console.log('REQASSOCIATION', reqAssociation)
-    console.log('REQUEST.ASSOCIATIONS', request.associations)
-
-    let reqItemIds
-    if (reqAssociation.itemIds) {
-        reqItemIds = reqAssociation.itemIds.split(", ")
+    const resAssociation = inbox[+contractId].associations.find(assoc => assoc.userId === currentUser.id)
+    if (contractInQuestion.status !== 'Created') {
+        let resItemIds = resAssociation.itemIds.split(", ")
+        let resContractItems
+        if (resItemIds) {
+            resContractItems = resItemIds.map(oneItemId => {
+                return items.find(item => +item.id === +oneItemId)
+            })
+        }
+        console.log('resCONTRACTITEMS', resContractItems)
     }
-    let reqContractItems
-    if (reqItemIds) {
-        reqContractItems = reqItemIds.map(oneItemId => {
-            return items.find(item => +item.id === +oneItemId)
-        })
-    }
-    console.log('REQCONTRACTITEMS', reqContractItems)
-    const resAssociation = request.associations.find(assoc => assoc.userId === currentUser.id)
+    
 
-    let resItemIds
-    if (resAssociation.itemIds) {
-        resItemIds = resAssociation.itemIds.split(", ")
-    }
-    let resContractItems
-    if (resItemIds) {
-        resContractItems = resItemIds.map(oneItemId => {
+    //initiator 
+    const otherUserId = inbox[+contractId].otherUser.id
+    const initAssociation = inbox[+contractId].associations.find(assoc => assoc.userId === otherUserId)
+    console.log('initAssociation', initAssociation)
+
+    let initItemIds = initAssociation.itemIds.split(", ")
+    let initContractItems
+    if (initItemIds) {
+        initContractItems = initItemIds.map(oneItemId => {
             return items.find(item => +item.id === +oneItemId)
         })
     }
@@ -51,16 +48,16 @@ const RequestTicket = (props) => {
                     <div className="requested-items">
                         <h3>Requested from you:</h3>
                         <ul className="request-ticket-card"  >
-                            {reqContractItems &&
+                            {initContractItems &&
                                 <li>
-                                    <ItemCard itemOwnerId={currentUser.id} items={reqContractItems} path={props.match.path} inRequest="true" />
+                                    <ItemCard itemOwnerId={currentUser.id} items={initContractItems} path={path} inRequest="true" />
                                 </li>
                             }
                         </ul>
                         <h3>Your request:</h3>
                         {offer &&
                             <div>
-                                <ItemCard itemOwnerId={senderId} items={offer} path={props.match.path} inRequest="true" />
+                                <ItemCard itemOwnerId={otherUserId} items={offer} path={path} inRequest="true" />
                                 <button type="button" className="btn btn-primary" onClick={() => updateContractHandler(offer, contractInQuestion, sender, senderId, currentUser)}>
                                     Send Request <i className="fas fa-arrow-circle-right" />
                                 </button>
@@ -69,12 +66,11 @@ const RequestTicket = (props) => {
                     </div>
                     <hr />
                     <div className="sender-pantry">
-                        <Pantry senderId={senderId} path={props.match.path} />
+                        <Pantry senderId={otherUserId} path={props.match.path} />
                     </div>
                 </div>)
             break;
         case 'FirstReview':
-            firstReviewRequests.push(currentContract)
             break;
         case 'SecondReview':
             display =
@@ -191,4 +187,4 @@ const mapDispatch = (dispatch, ownProps) => {
     }
 }
 
-export default withRouter(connect(mapState, mapDispatch)(RequestTicket))
+export default withRouter(connect(mapState, mapDispatch)(RespondingRequestTicket))

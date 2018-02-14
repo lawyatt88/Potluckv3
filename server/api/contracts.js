@@ -34,12 +34,12 @@ console.log('HIIIIIII')
         ContractAssociations.bulkCreate([{
             contractId: contract.id,
             userId: req.body.currentUserId,
+            itemIds: req.body.itemIds,
             initiator: false,
         },
         {
             contractId: contract.id,
             userId: req.body.soliciteeId,
-            itemIds: req.body.itemIds,
             initiator: true,
         }])
         return contract

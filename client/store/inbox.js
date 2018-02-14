@@ -41,7 +41,6 @@ export const removeContract = contractId => dispatch =>
     .then(res => dispatch(getInbox(res.data)))
     .catch(err => console.log(err))
 
-
 /**
  * REDUCER
  */

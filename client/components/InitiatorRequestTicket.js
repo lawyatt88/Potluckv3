@@ -6,77 +6,60 @@ import Pantry from './Pantry'
 import { fetchContractAssociations, updateContract, removeFromOffer, removeFromMyMarket, updateContractStatus, completeContractStatus } from '../store'
 
 const InitiatorRequestTicket = (props) => {
-    console.log('PROPS FROM request ticket', props)
-    const { items, contractId, currentUser, offer, inbox, updateContractHandler, approveSwapHandler, completeSwapHandler } = props
+    console.log('PROPS FROM init request ticket', props)
+    const { items, contractId, currentUser, offer, inbox, path, updateContractHandler, approveSwapHandler, completeSwapHandler, } = props
 
-    const contractInQuestion = contracts.find(contract => +contract.id === +contractId)
+    //first items belong to currentUser
+    const contractInQuestion = inbox[+contractId].contract
+    const otherUserName = inbox[+contractId].otherUser.username
 
-    const senderId = requests[contractId].otherUserId
-    const senderItems = items.filter(item => item.userId === senderId)
-    const sender = senderItems[0].user
-    const request = requests[contractId]
-    const reqAssociation = request.associations.find(assoc => assoc.userId === currentUser.id)
-    console.log('REQASSOCIATION', reqAssociation)
-    console.log('REQUEST.ASSOCIATIONS', request.associations)
-
-    let reqItemIds
-    if (reqAssociation.itemIds) {
-        reqItemIds = reqAssociation.itemIds.split(", ")
-    }
-    let reqContractItems
-    if (reqItemIds) {
-        reqContractItems = reqItemIds.map(oneItemId => {
+    const initiatorAssociation = inbox[+contractId].associations.find(assoc => assoc.userId === currentUser.id)
+    let initItemIds = initiatorAssociation.itemIds.split(", ")
+    let initContractItems
+    if (initItemIds) {
+        initContractItems = initItemIds.map(oneItemId => {
             return items.find(item => +item.id === +oneItemId)
         })
     }
-    console.log('REQCONTRACTITEMS', reqContractItems)
-    const resAssociation = request.associations.find(assoc => assoc.userId === currentUser.id)
-
-    let resItemIds
-    if (resAssociation.itemIds) {
-        resItemIds = resAssociation.itemIds.split(", ")
+    console.log('initCONTRACTITEMS', initContractItems)
+    
+    if(contractInQuestion.status !== 'Created') {
+        const responderId = inbox[+contractId].otherUser.id
+        const resAssociation = inbox[+contractId].associations.find(assoc => assoc.userId === responderId)
+        console.log('resAssociation', resAssociation)
+    
+        let resItemIds = resAssociation.itemIds.split(", ")
+        let resContractItems
+        if (resItemIds) {
+            resContractItems = resItemIds.map(oneItemId => {
+                return items.find(item => +item.id === +oneItemId)
+            })
+        }
     }
-    let resContractItems
-    if (resItemIds) {
-        resContractItems = resItemIds.map(oneItemId => {
-            return items.find(item => +item.id === +oneItemId)
-        })
-    }
-
+    
     let display
     switch (contractInQuestion.status) {
         case 'Created':
             display =
                 (<div>
                     <div className="requested-items">
-                        <h3>Requested from you:</h3>
+                        <h3>{`You requested`}</h3>
                         <ul className="request-ticket-card"  >
-                            {reqContractItems &&
+                            {initContractItems &&
                                 <li>
-                                    <ItemCard itemOwnerId={currentUser.id} items={reqContractItems} path={props.match.path} inRequest="true" />
+                                    <ItemCard itemOwnerId={currentUser.id} items={initContractItems} path={path} inRequest="true" />
                                 </li>
                             }
                         </ul>
-                        <h3>Your request:</h3>
-                        {offer &&
-                            <div>
-                                <ItemCard itemOwnerId={senderId} items={offer} path={props.match.path} inRequest="true" />
-                                <button type="button" className="btn btn-primary" onClick={() => updateContractHandler(offer, contractInQuestion, sender, senderId, currentUser)}>
-                                    Send Request <i className="fas fa-arrow-circle-right" />
-                                </button>
-                            </div>
-                        }
-                    </div>
-                    <hr />
-                    <div className="sender-pantry">
-                        <Pantry senderId={senderId} path={props.match.path} />
+                        <h3>{`from ${otherUserName}`}</h3>
                     </div>
                 </div>)
             break;
         case 'FirstReview':
-            firstReviewRequests.push(currentContract)
+            // would change after other user opened request
             break;
         case 'SecondReview':
+            // changes after currentUser opens it from firstReview
             display =
                 (<div className="requested-items">
                     <button type="button" className="btn btn-primary" onClick={() => approveSwapHandler(contractInQuestion)}>
@@ -84,9 +67,10 @@ const InitiatorRequestTicket = (props) => {
                 </button>
                     <h3>Requested from you:</h3>
                     <ul className="request-ticket-card"  >
-                        {reqContractItems &&
+                        {initContractItems &&
+
                             <li>
-                                <ItemCard itemOwnerId={currentUser.id} items={reqContractItems} path={props.match.path} inRequest="true" />
+                                <ItemCard itemOwnerId={currentUser.id} items={initContractItems} path={props.match.path} inRequest="true" />
                             </li>
                         }
                     </ul>
@@ -108,8 +92,8 @@ const InitiatorRequestTicket = (props) => {
                 </button>
                     <h3>Requested from you:</h3>
                     <ul className="request-ticket-card"  >
-                        {reqContractItems &&
-                            reqContractItems.map(item => <li key={item.id}>{item.name}</li>)}
+                        {initContractItems &&
+                            initContractItems.map(item => <li key={item.id}>{item.name}</li>)}
                     </ul>
                     <h3>Your request:</h3>
                     <ul className="request-ticket-card"  >
@@ -117,23 +101,20 @@ const InitiatorRequestTicket = (props) => {
                         resContractItems.map(item => <li key={item.id}>{item.name}</li>)}
                         </ul>
                 </div>)
-
-
             break;
         case 'Completed':
         display =
         (<div className="requested-items">
             <h3>Requested from you:</h3>
             <ul className="request-ticket-card"  >
-                {reqContractItems &&
-                    reqContractItems.map(item => <li key={item.id}>{item.name}</li>)}
+                {initContractItems &&
+                    initContractItems.map(item => <li key={item.id}>{item.name}</li>)}
             </ul>
             <h3>Your request:</h3>
             <ul className="request-ticket-card"  >
             {resContractItems &&
                 resContractItems.map(item => <li key={item.id}>{item.name}</li>)}
                 </ul>
-
                 <h4>Date completed: {contractInQuestion.updatedAt}</h4>
         </div>)
 
@@ -142,10 +123,12 @@ const InitiatorRequestTicket = (props) => {
 
             break;
         default:
-
-
+        
     }
 
+
+    
+    
     return (
         <div className="request-ticket container">
             {/*<h5>Lets make a swap!</h5>*/}
@@ -155,13 +138,10 @@ const InitiatorRequestTicket = (props) => {
     )
 }
 
-
 const mapState = (state, ownProps) => {
     return {
         items: state.market,
-        inbox: state.inbox,
         currentUser: state.user,
-        contractId: ownProps.match.params.id,
         offer: state.offer
     }
 }
@@ -190,4 +170,4 @@ const mapDispatch = (dispatch, ownProps) => {
     }
 }
 
-export default withRouter(connect(mapState, mapDispatch)(RequestTicket))
+export default connect(mapState, mapDispatch)(InitiatorRequestTicket)

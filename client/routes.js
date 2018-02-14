@@ -17,7 +17,7 @@ class Routes extends Component {
   }
 
   render() {
-    const {isLoggedIn} = this.props
+    const {isLoggedIn, inbox} = this.props
 
     return (
       <Router history={history}>
@@ -37,7 +37,7 @@ class Routes extends Component {
               <Route exact path="/account" component={Account} />
               <Route exact path="/messageinbox" component={MessageInbox} />
               <Route exact path="/pantry" component={Pantry} />
-              <Route path="/:id" component={RequestTicket} />
+              <Route path="/:id" component={RequestTicket} inbox={inbox} />
               </Switch>
             }
             {/* Displays our Login component as a fallback */}
@@ -55,7 +55,8 @@ class Routes extends Component {
 const mapState = (state) => {
   return {
     isLoggedIn: !!state.user.id,
-    currentUser: state.user
+    currentUser: state.user,
+    inbox: state.inbox
   }
 }
 
@@ -66,7 +67,6 @@ const mapDispatch = (dispatch) => {
       dispatch(fetchContracts())
       dispatch(fetchAllItems())
       dispatch(fetchCompletedContracts())
-      dispatch(fetchInbox())
     }
   }
 }

@@ -84,9 +84,9 @@ const mapState = (state) => {
 }
 
 const mapDispatch = (dispatch) => {
-  return {
-    
-  }
+    return {
+      
+    }
 }
 
 // The `withRouter` wrapper makes sure that updates are not blocked
