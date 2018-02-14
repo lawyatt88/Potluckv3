@@ -18,6 +18,8 @@ router.get('/', (req, res, next) => {
         //add unique contract IDs to set
         assocsByCurrentUser.forEach(association => associationContractIds.add(association.contractId))
 
+        let otherUserIdArr = []
+
         //compose inbox Map by contract ID
         associationContractIds.forEach((contractId, v2, set) => {
             let contract, assocs, otherUser
@@ -26,20 +28,46 @@ router.get('/', (req, res, next) => {
             //find other user by looking through assocs and filtering out current user
             //grabbing the other user's ID and finding them in the DB
             let otherUserAssocs = assocs.filter(assoc => +assoc.userId !== +passport.user)
-            let otherUserId = otherUserAssocs[0].userId
-
-
+            otherUserIdArr.push(otherUserAssocs[0].userId)
+            
             // finally compose object and add it to Map
-            contractsByContractId[contractId] = { associations: assocs, otherUserId: otherUserId}
+            contractsByContractId[contractId] = { associations: assocs }
+        })
+        return otherUserIdArr
+      })
+      .then( otherUserIdArr => {
+        otherUserPromiseArr = otherUserIdArr.map(otherUserId => {
+          return User.findById(otherUserId)
         })
 
+        return Promise.all(otherUserPromiseArr)
+      })
+      .then(rOtherUsersArr => {
+        let contractPromiseArr = []
+        rOtherUsersArr.forEach(otherUser => {
+          associationContractIds.forEach((contractId, v2, set) => {
+            // finally compose object and add it to Map
+            contractPromiseArr.push(Contract.findById(contractId))
+            contractsByContractId[contractId] = { ...contractsByContractId[contractId], otherUser: otherUser }
+          })
+        })
+        return Promise.all(contractPromiseArr)
+      })
+      .then(rContractsArr => {
+        rContractsArr.forEach(contract => {
+          associationContractIds.forEach((contractId, v2, set) => {
+            // finally compose object and add it to Map
+            contractsByContractId[contractId] = { ...contractsByContractId[contractId], contract: contract }
+          })
+        })
         req.session.inbox = contractsByContractId
         return req.session.inbox
-        })
-        .then(newInbox => {
-            res.json(newInbox)
-        })
-        .catch(next);
+      })
+      .then(newInbox => {
+        console.log('NEWiNBOX', newInbox)
+        res.json(newInbox)
+      })
+      .catch(next);
 })
 
 

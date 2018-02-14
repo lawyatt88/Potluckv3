@@ -26,19 +26,21 @@ console.log('HIIIIIII')
     .then(newContract => {
       return Promise.all([newContract])
     })
-    .then(newContract => {
-      console.log('HELLO?')
+    .then(newContractArr => {
+      newContract = newContractArr[0]
       return newContract.update({contractAddress: newContract.id})
     })
     .then(contract => {
         ContractAssociations.bulkCreate([{
             contractId: contract.id,
-            userId: req.body.currentUserId
+            userId: req.body.currentUserId,
+            initiator: false,
         },
         {
             contractId: contract.id,
             userId: req.body.soliciteeId,
-            itemIds: req.body.itemIds
+            itemIds: req.body.itemIds,
+            initiator: true,
         }])
         return contract
     })

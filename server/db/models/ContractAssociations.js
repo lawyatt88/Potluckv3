@@ -11,6 +11,9 @@ const ContractAssociations = db.define('contractAssociation', {
   itemReceived: {
     type: Sequelize.BOOLEAN,
     defaultValue: false
+  },
+  initiator: {
+    type: Sequelize.BOOLEAN
   }
 })
 
