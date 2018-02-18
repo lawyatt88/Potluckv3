@@ -6,20 +6,24 @@ import RespondingRequestTicket from './RespondingRequestTicket'
 import { fetchContractAssociations, updateContract, removeFromOffer, removeFromMyMarket, updateContractStatus, completeContractStatus, fetchInbox } from '../store'
 
 class RequestTicket extends Component {
-    componentDidMount() {
-        this.props.loadInboxData()
+    componentWillUpdate(nextProps, nextState){
+        // in case user refreshes request ticket/goes directly to request ticket without going through the inbox component
+        const { contractId, currentUser, inbox, match } = nextProps
+        let myAssoc = inbox[+contractId].associations.find(assoc => +assoc.userId === +currentUser.id)
+        
+        this.display = myAssoc.initiator ? <InitiatorRequestTicket inbox={inbox} contractId={contractId} path={match.path} /> : <RespondingRequestTicket inbox={inbox} contractId={contractId} path={match.path} />
     }
 
     render (){
-        console.log('the proppppppps', this.props)
         const { contractId, currentUser, inbox, match } = this.props
-    
-        let myAssoc = inbox[+contractId].associations.find(assoc => +assoc.userId === +currentUser.id)
-    
-        let display = myAssoc.initiator ? <InitiatorRequestTicket inbox={inbox} contractId={contractId} path={match.path} /> : <RespondingRequestTicket inbox={inbox} contractId={contractId} path={match.path} />
-        console.log('display', display)
+        if (Object.keys(inbox).length) {
+            let myAssoc = inbox[+contractId].associations.find(assoc => +assoc.userId === +currentUser.id)
+            this.display = myAssoc.initiator ? <InitiatorRequestTicket inbox={inbox} contractId={contractId} path={match.path} /> : <RespondingRequestTicket inbox={inbox} contractId={contractId} path={match.path} />
+            
+            console.log('display', this.display)
+        }
         return (
-            inbox && display
+            this.display || null
         )
     }
 }
@@ -32,12 +36,4 @@ const mapState = (state, ownProps) => {
     }
 }
 
-const mapDispatch = (dispatch, ownProps) => {
-    return {
-        loadInboxData: () => {
-            dispatch(fetchInbox())
-        }
-    }
-}
-
-export default withRouter(connect(mapState, mapDispatch)(RequestTicket))
+export default withRouter(connect(mapState)(RequestTicket))

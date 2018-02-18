@@ -87,7 +87,6 @@ const mapDispatch = (dispatch, ownProps) => {
                     dispatch(removeFromMyMarket(item.id))
                 })
                 toast.success('Your request has been sent!')
-
                 //should items keep a state? pending
         },
         sendBatchRequestHandler: (event, items, currentUser) => {

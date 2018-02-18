@@ -3,6 +3,7 @@ const { Item, Contract, ContractAssociations, User } = require("../db/models");
 
 router.get('/', (req, res, next) => {
     let { inbox, passport } = req.session
+    console.log('req.session', req.session)
     //instanciate object for inbox on session
     const contractsByContractId = {}
     //find contract IDs and status from associations contractIds
