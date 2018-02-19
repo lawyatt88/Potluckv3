@@ -15,14 +15,17 @@ router.get('/', (req, res, next) => {
         // console.log('I AM HERE!', rAssociations)
         //return all contract associations by current user
         let assocsByCurrentUser = rAssociations.filter(assoc => +assoc.userId === +passport.user)
+        let assocIds = assocsByCurrentUser.map(assoc => assoc.contractId).sort((x, y) => x - y)
 
         //add unique contract IDs to set
-        assocsByCurrentUser.forEach(association => associationContractIds.add(association.contractId))
+        assocIds.forEach(assocId => associationContractIds.add(assocId))
+        console.log('associationContractIds', associationContractIds)
 
         let otherUserPromiseArr = [], contractPromiseArr = []
 
         //compose inbox object by contract ID
         associationContractIds.forEach((contractId, v2, set) => {
+          console.log('inLoo00000000p',contractId)
             let contract, assocs, otherUser
 
             //find all associations with current contract

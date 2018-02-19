@@ -11,7 +11,7 @@ const Account = (props) => {
             {/*<h2>Account</h2>*/}
             <h3>Welcome, {user.username}</h3>
             <h3>Potluck points: {user.rating}</h3>
-            <p onClick={(event) => props.handleClick(event, user, stopGeth)}>Logout</p>
+            <p onClick={(event) => handleClick(event, user, stopGeth)}>Logout</p>
 
         </div>
     )

@@ -1,17 +1,16 @@
 import React from 'react'
 import InboxCard from './InboxCard'
-import {connect} from 'react-redux'
-import {withRouter, Link} from 'react-router-dom'
+import { connect } from 'react-redux'
+import { withRouter, Link } from 'react-router-dom'
+import { updateContractStatus } from '../store'
 
 const Inbox = (props) => {
-    const { currentUser, inbox } = props
+    const { currentUser, inbox, changeStatusToFirstReview, changeStatusToSecondReview } = props
     console.log('the INBOX', inbox)
     let createdRequests = [], firstReviewRequests = [], secondReviewRequests = [], pendingRequests = [], completedRequests = [], canceledRequests = [];
     
     for (var contractId in inbox) {
-        console.log(contractId)
         let currentContract = inbox[contractId].contract
-        console.log('CURRENT CONTRACT', currentContract)
         switch (currentContract.status) {
             case 'Created':
                 createdRequests.push(currentContract)
@@ -36,6 +35,7 @@ const Inbox = (props) => {
         }
     }
 
+    
     let inboxBody
     if (!Object.keys(inbox).length) inboxBody = <h5>No current requests.</h5>
     else inboxBody = (
@@ -46,8 +46,11 @@ const Inbox = (props) => {
                     <h5>A user is interested in making a trade!</h5>
                     <ul className="ticket-list">
                         {createdRequests.map(request => {
+                            let myAssoc = inbox[request.id].associations.find(assoc => +assoc.userId === +currentUser.id)
+                            let createdClickHandler = myAssoc.initiator ? () => {} : () => changeStatusToFirstReview(request)
+                            console.log('createdClickHandler', createdClickHandler)
                             return (
-                                <li key={request.id} className="request-ticket-card">
+                                <li key={request.id} className="request-ticket-card" onClick={createdClickHandler}>
                                     <Link to={`/${request.id}`}>
                                         <InboxCard request={request} otherUser={inbox[request.id].otherUser} />
                                     </Link>
@@ -64,8 +67,11 @@ const Inbox = (props) => {
                     <ul className="ticket-list">
                         {firstReviewRequests &&
                             firstReviewRequests.map(request => {
+                                let myAssoc = inbox[request.id].associations.find(assoc => +assoc.userId === +currentUser.id)
+                                let firstReviewClickHandler = myAssoc.initiator ? () => changeStatusToSecondReview(request) : () => {}
+                                console.log('firstReviewClickHandler', firstReviewClickHandler)
                                 return (
-                                    <li key={request.id} className="request-ticket-card">
+                                    <li key={request.id} className="request-ticket-card" onClick={firstReviewClickHandler} >
                                         <Link to={`/${request.id}`}>
                                             <InboxCard request={request} otherUser={inbox[request.id].otherUser} />
                                         </Link>
@@ -134,4 +140,11 @@ const mapState = (state) => {
     }
 }
 
-export default withRouter(connect(mapState)(Inbox))
+const mapDispatch = (dispatch) => {
+    return {
+        changeStatusToFirstReview: (contract) => dispatch(updateContractStatus(contract.id, {status: 'FirstReview'})),
+        changeStatusToSecondReview: (contract) => dispatch(updateContractStatus(contract.id, {status: 'SecondReview'}))
+    }
+}
+
+export default withRouter(connect(mapState, mapDispatch)(Inbox))

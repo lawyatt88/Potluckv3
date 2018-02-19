@@ -12,12 +12,14 @@ const RespondingRequestTicket = (props) => {
     
     //first items belong to otherUser
     const contractInQuestion = inbox[+contractId].contract
+    
+    console.log('contractInQuestion', contractInQuestion)
     const otherUserName = inbox[+contractId].otherUser.username
 
     const resAssociation = inbox[+contractId].associations.find(assoc => assoc.userId === currentUser.id)
-    if (contractInQuestion.status !== 'Created') {
+    let resContractItems
+    if (resAssociation.itemIds) {
         let resItemIds = resAssociation.itemIds.split(", ")
-        let resContractItems
         if (resItemIds) {
             resContractItems = resItemIds.map(oneItemId => {
                 return items.find(item => +item.id === +oneItemId)
@@ -29,16 +31,18 @@ const RespondingRequestTicket = (props) => {
 
     //initiator 
     const otherUserId = inbox[+contractId].otherUser.id
+    const otherUser = inbox[+contractId].otherUser
+    console.log('otherUserId', otherUserId)
     const initAssociation = inbox[+contractId].associations.find(assoc => assoc.userId === otherUserId)
     console.log('initAssociation', initAssociation)
-
-    let initItemIds = initAssociation.itemIds.split(", ")
-    let initContractItems
-    if (initItemIds) {
-        initContractItems = initItemIds.map(oneItemId => {
-            return items.find(item => +item.id === +oneItemId)
-        })
-    }
+        let initItemIds = initAssociation.itemIds.split(", ")
+        let initContractItems
+        if (initItemIds) {
+            initContractItems = initItemIds.map(oneItemId => {
+                return items.find(item => +item.id === +oneItemId)
+            })
+        }
+    
 
     let display
     switch (contractInQuestion.status) {
@@ -58,7 +62,7 @@ const RespondingRequestTicket = (props) => {
                         {offer &&
                             <div>
                                 <ItemCard itemOwnerId={otherUserId} items={offer} path={path} inRequest="true" />
-                                <button type="button" className="btn btn-primary" onClick={() => updateContractHandler(offer, contractInQuestion, sender, senderId, currentUser)}>
+                                <button type="button" className="btn btn-primary" onClick={() => updateContractHandler(offer, contractInQuestion, otherUser, otherUserId, currentUser)}>
                                     Send Request <i className="fas fa-arrow-circle-right" />
                                 </button>
                             </div>
@@ -71,6 +75,55 @@ const RespondingRequestTicket = (props) => {
                 </div>)
             break;
         case 'FirstReview':
+            display =
+            (<div>
+            {!resAssociation.itemIds &&
+                <div> 
+                <div className="requested-items">
+                        <h3>Requested from you:</h3>
+                        <ul className="request-ticket-card"  >
+                            {initContractItems &&
+                                <li>
+                                    <ItemCard itemOwnerId={currentUser.id} items={initContractItems} path={path} inRequest="true" />
+                                </li>
+                            }
+                        </ul>
+                        <h3>Your request:</h3>
+                        {offer && 
+                            <div>
+                                <ItemCard itemOwnerId={otherUserId} items={offer} path={path} inRequest="true" />
+                                <button type="button" className="btn btn-primary" onClick={() => updateContractHandler(offer, contractInQuestion, otherUser, otherUserId, currentUser)}>
+                                    Send Request <i className="fas fa-arrow-circle-right" />
+                                </button>
+                            </div>
+                        }
+                        </div>
+                        <hr />
+                        <div className="sender-pantry">
+                            <Pantry senderId={otherUserId} path={props.match.path} />
+                        </div>
+                        </div>
+                    }
+                        {resAssociation.itemIds &&
+                            <div>
+                            <div className="requested-items">
+                            <h3>Requested from you:</h3>
+                            <ul className="request-ticket-card"  >
+                                {initContractItems &&
+                                    initContractItems.map(item => <li key={item.id}>{item.name}</li>)}
+                            </ul>
+                            <h3>Your request:</h3>
+                            <ul className="request-ticket-card"  >
+                            {resContractItems &&
+                                resContractItems.map(item => <li key={item.id}>{item.name}</li>)}
+                            </ul>
+                        </div>
+                        <hr />
+                        <h4>{`Your response has been sent! ${otherUserName} is considering your request!`}</h4>
+                        
+                    </div>}
+                    </div>
+                    )
             break;
         case 'SecondReview':
             display =
