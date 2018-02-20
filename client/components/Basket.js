@@ -57,13 +57,6 @@ const Basket = (props) => {
     return (
         <div>
             {display}
-                {
-                  // items.length &&
-                  //   <button type="button" className="btn btn-primary" onClick={event => props.sendBatchRequestHandler(event, items, currentUser)}>
-                  //       {modalIcon}
-                  //   </button>
-                }
-                <Modal name="request" body={modalBody} />
         </div>
     )
 }

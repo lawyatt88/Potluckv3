@@ -5,6 +5,7 @@ import {createContractApi} from './contract'
 /**
  * ACTION TYPES
  */
+const GET_BASKET = 'GET_BASKET'
 const ADD_BASKET_ITEM = 'GET_BASKET_ITEM'
 const REMOVE_BASKET_ITEM = 'REMOVE_BASKET_ITEM'
 
@@ -17,7 +18,7 @@ const defaultBasket = []
  * ACTION CREATORS
  *
  */
-export const addToBasket = item => ({ type: ADD_BASKET_ITEM, item })
+const getBasket = basket => ({ type: GET_BASKET, basket })
 export const removeFromBasket = itemId => ({ type: REMOVE_BASKET_ITEM, itemId })
 /**
  * THUNK CREATORS
@@ -42,13 +43,44 @@ export const removeFromBasket = itemId => ({ type: REMOVE_BASKET_ITEM, itemId })
 //       .catch(err => console.log(err))
 //     }
 
+export const fetchBasket = () => dispatch =>
+axios
+  .get('/api/basket')
+  .then(res => dispatch(getBasket(res.data || defaultBasket)))
+  .catch(err => console.log(err))
+
+export const updateBasket = item => dispatch =>
+axios
+  .put('/api/basket/update', item)
+  .then(() => dispatch(fetchBasket()))
+  .catch(err => console.log(err))
+
+export const deleteLineItem = productId => dispatch =>
+axios
+  .put('/api/basket/delete', { productId })
+  .then(() => axios.get('/api/basket'))
+  .then(res => dispatch(getBasket(res.data)))
+  .catch(err => console.log(err))
+
+export const submitBasket = orderInfo => (dispatch, getState) =>
+axios
+  .post('/api/orders', orderInfo)
+  .then(res => {
+    dispatch(getBasketOrder(res.data))
+    return res.data
+  })
+  .then(order => history.push(`/checkout-confirm/${order.id}`))
+  .then(axios.delete('/api/basket'))
+  .then(dispatch(resetBasket()))
+  .catch(err => console.log(err))
+
 /**
  * REDUCER
  */
 export default function(state = defaultBasket, action) {
   switch (action.type) {
-    case ADD_BASKET_ITEM:
-        return [...state, action.item]
+    case GET_BASKET:
+        return action.item
 
     case REMOVE_BASKET_ITEM:
     console.log("ACTION.ITEMID", action.itemId)

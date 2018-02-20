@@ -21,18 +21,17 @@ router.get('/ledger/:contractId', (req, res, next) => {
     })
     .then( assocs => Promise.all(assocs))
     .then( rAssocs => {
-      console.log('RASSOCS', rAssocs[0].userId)
       newTrade.user1 = {
         id: rAssocs[0].userId,
         name: 'name',
-        itemIds: rAssocs[0].itemIds.split(", "),
+        itemIds: rAssocs[1].itemIds.split(", "),
         itemImg: '',
         comments: rAssocs[0].comment
       }
       newTrade.user2 = {
         id: rAssocs[1].userId,
         name: 'name',
-        itemIds: rAssocs[1].itemIds.split(", "),
+        itemIds: rAssocs[0].itemIds.split(", "),
         itemImg: '',
         comments: rAssocs[1].comment
       }
@@ -48,7 +47,6 @@ router.get('/ledger/:contractId', (req, res, next) => {
       })
      .then( foundUser1Items => {
        newTrade.user1.itemImgs = foundUser1Items.map(item => item.iconUrl)
-
        return Promise.all(newTrade.user2.itemImgs)
      })
      .then( foundUser2Items => {

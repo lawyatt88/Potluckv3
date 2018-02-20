@@ -48,11 +48,10 @@ const Inbox = (props) => {
                         {createdRequests.map(request => {
                             let myAssoc = inbox[request.id].associations.find(assoc => +assoc.userId === +currentUser.id)
                             let createdClickHandler = myAssoc.initiator ? () => {} : () => changeStatusToFirstReview(request)
-                            console.log('createdClickHandler', createdClickHandler)
                             return (
                                 <li key={request.id} className="request-ticket-card" onClick={createdClickHandler}>
                                     <Link to={`/${request.id}`}>
-                                        <InboxCard request={request} otherUser={inbox[request.id].otherUser} />
+                                        <InboxCard request={request} otherUser={inbox[request.id].otherUser} isInitiator={myAssoc.initiator} />
                                     </Link>
                                 </li>
                             )
@@ -68,12 +67,13 @@ const Inbox = (props) => {
                         {firstReviewRequests &&
                             firstReviewRequests.map(request => {
                                 let myAssoc = inbox[request.id].associations.find(assoc => +assoc.userId === +currentUser.id)
+                                let otherAssoc = inbox[request.id].associations.find(assoc => +assoc.userId === +inbox[request.id].otherUser.id)
+                                let hasResponse = myAssoc.initiator ? otherAssoc.itemIds : myAssoc.itemIds
                                 let firstReviewClickHandler = myAssoc.initiator ? () => changeStatusToSecondReview(request) : () => {}
-                                console.log('firstReviewClickHandler', firstReviewClickHandler)
                                 return (
                                     <li key={request.id} className="request-ticket-card" onClick={firstReviewClickHandler} >
                                         <Link to={`/${request.id}`}>
-                                            <InboxCard request={request} otherUser={inbox[request.id].otherUser} />
+                                            <InboxCard request={request} otherUser={inbox[request.id].otherUser} isInitiator={myAssoc.initiator} hasResponse={hasResponse} />
                                         </Link>
                                     </li>
                                 )
@@ -81,10 +81,11 @@ const Inbox = (props) => {
                         }
                         {secondReviewRequests &&
                             secondReviewRequests.map(request => {
+                                let myAssoc = inbox[request.id].associations.find(assoc => +assoc.userId === +currentUser.id)
                                 return (
                                     <li key={request.id} className="request-ticket-card">
                                         <Link to={`/${request.id}`}>
-                                            <InboxCard request={request} otherUser={inbox[request.id].otherUser} />
+                                            <InboxCard request={request} otherUser={inbox[request.id].otherUser} isInitiator={myAssoc.initiator} />
                                         </Link>
                                     </li>
                                 )
@@ -99,10 +100,11 @@ const Inbox = (props) => {
                     <h5>Congrats! Both users have confirmed the trade. Meet up in person to exchange your foods and receive 10 Potluck Points!</h5>
                     <ul className="ticket-list">
                             {pendingRequests.map(request => {
+                                let myAssoc = inbox[request.id].associations.find(assoc => +assoc.userId === +currentUser.id)
                                 return (
                                     <li key={request.id} className="request-ticket-card">
                                         <Link to={`/${request.id}`}>
-                                            <InboxCard request={request} otherUser={inbox[request.id].otherUser} />
+                                            <InboxCard request={request} otherUser={inbox[request.id].otherUser} isInitiator={myAssoc.initiator} />
                                         </Link>
                                     </li>
                                 )
@@ -116,10 +118,11 @@ const Inbox = (props) => {
                 <h5>Way to go! Here's a list of your successful trades:</h5>
                 <ul className="ticket-list">
                         {completedRequests.map(request => {
+                            let myAssoc = inbox[request.id].associations.find(assoc => +assoc.userId === +currentUser.id)
                             return (
                                 <li key={request.id} className="request-ticket-card">
                                     <Link to={`/${request.id}`}>
-                                        <InboxCard request={request} otherUser={inbox[request.id].otherUser} />
+                                        <InboxCard request={request} otherUser={inbox[request.id].otherUser} isInitiator={myAssoc.initiator} />
                                     </Link>
                                 </li>
                             )

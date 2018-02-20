@@ -23,13 +23,13 @@ const InitiatorRequestTicket = (props) => {
     }
     console.log('initCONTRACTITEMS', initContractItems)
     
+    let resContractItems, resAssociation
     if(contractInQuestion.status !== 'Created') {
         const responderId = inbox[+contractId].otherUser.id
-        const resAssociation = inbox[+contractId].associations.find(assoc => assoc.userId === responderId)
+        resAssociation = inbox[+contractId].associations.find(assoc => assoc.userId === responderId)
         console.log('resAssociation', resAssociation)
     
         let resItemIds = resAssociation.itemIds.split(", ")
-        let resContractItems
         if (resItemIds) {
             resContractItems = resItemIds.map(oneItemId => {
                 return items.find(item => +item.id === +oneItemId)
@@ -57,6 +57,44 @@ const InitiatorRequestTicket = (props) => {
             break;
         case 'FirstReview':
             // would change after other user opened request
+            display =
+            (<div>
+            {!resAssociation.itemIds &&
+                <div>
+                    <h4>{`${otherUserName} is reviewing your request!`}</h4>
+                    <hr />
+                    <div className="requested-items">
+                        <h3>{`You requested`}</h3>
+                        <ul className="request-ticket-card"  >
+                            {initContractItems &&
+                                <li>
+                                    <ItemCard itemOwnerId={currentUser.id} items={initContractItems} path={path} inRequest="true" />
+                                </li>
+                            }
+                        </ul>
+                        <h3>{`from ${otherUserName}`}</h3>
+                    </div>
+                </div>
+                }
+                {resAssociation.itemIds &&
+                    <div>
+                        <h4>{`${otherUser.username} has responded - confirm your trade!`}</h4>
+                        <hr />
+                        <div className="requested-items">
+                            <h3>Your request:</h3>
+                            <ul className="request-ticket-card">
+                                {initContractItems &&
+                                    initContractItems.map(item => <li key={item.id}>{item.name}</li>)}
+                            </ul>
+                            <h3>Requested from you:</h3>
+                            <ul className="request-ticket-card">
+                                {resContractItems &&
+                                    resContractItems.map(item => <li key={item.id}>{item.name}</li>)}
+                            </ul>
+                        </div> 
+                    </div>}
+                </div>
+                )
             break;
         case 'SecondReview':
             // changes after currentUser opens it from firstReview
@@ -64,23 +102,16 @@ const InitiatorRequestTicket = (props) => {
                 (<div className="requested-items">
                     <button type="button" className="btn btn-primary" onClick={() => approveSwapHandler(contractInQuestion)}>
                         Let's swap!
-                </button>
-                    <h3>Requested from you:</h3>
-                    <ul className="request-ticket-card"  >
-                        {initContractItems &&
-
-                            <li>
-                                <ItemCard itemOwnerId={currentUser.id} items={initContractItems} path={props.match.path} inRequest="true" />
-                            </li>
-                        }
-                    </ul>
+                    </button>
                     <h3>Your request:</h3>
                     <ul className="request-ticket-card"  >
+                    {initContractItems &&
+                        initContractItems.map(item => <li key={item.id}>{item.name}</li>)}
+                    </ul>
+                    <h3>Requested from you:</h3>
+                    <ul className="request-ticket-card">
                     {resContractItems &&
-                        <li>
-                            <ItemCard itemOwnerId={currentUser.id} items={resContractItems} path={props.match.path} inRequest="true" />
-                        </li>
-                    }
+                        resContractItems.map(item => <li key={item.id}>{item.name}</li>)}
                     </ul>
                 </div>)
             break;
@@ -89,17 +120,17 @@ const InitiatorRequestTicket = (props) => {
                 (<div className="requested-items">
                     <button type="button" className="btn btn-primary" onClick={() => completeSwapHandler(contractInQuestion, currentUser)}>
                         Complete swap!
-                </button>
-                    <h3>Requested from you:</h3>
-                    <ul className="request-ticket-card"  >
+                    </button>
+                    <h3>Your request:</h3>
+                    <ul className="request-ticket-card">
                         {initContractItems &&
                             initContractItems.map(item => <li key={item.id}>{item.name}</li>)}
                     </ul>
-                    <h3>Your request:</h3>
-                    <ul className="request-ticket-card"  >
+                    <h3>Requested from you:</h3>
+                    <ul className="request-ticket-card">
                     {resContractItems &&
                         resContractItems.map(item => <li key={item.id}>{item.name}</li>)}
-                        </ul>
+                    </ul>
                 </div>)
             break;
         case 'Completed':

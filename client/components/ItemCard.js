@@ -2,7 +2,7 @@ import React from 'react'
 import {connect} from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import Modal from './Modal'
-import { addToBasket, removeFromBasket, returnToMyMarketThunk, removeFromMyMarket, addToOffer, removeFromOffer, createContractWeb3 } from '../store'
+import { updateBasket, addToBasket, removeFromBasket, returnToMyMarketThunk, removeFromMyMarket, addToOffer, removeFromOffer, createContractWeb3 } from '../store'
 
 
 
@@ -92,7 +92,7 @@ const mapState = (state, ownProps) => {
 const mapDispatch = (dispatch, ownProps) => {
     return {
         handleAddToBasket: (event, singleItem, userId) => {
-            dispatch(addToBasket(singleItem, userId))
+            dispatch(updateBasket(singleItem))
             dispatch(removeFromMyMarket(singleItem.id))
         },
         handleRemoveFromBasket: (event, itemId, userId) => {

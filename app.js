@@ -50,10 +50,11 @@ const createApp = () => {
   app.use((req, res, next) => {
     if (!req.session.inbox) req.session.inbox = {}
     if (!req.session.basket) req.session.basket = []
-    console.log('REQ.SESSION', req.session)
+    if (!req.session.inEscrow) req.session.inEscrow = []
+    console.log('req.session', req.session)
     next()
   })
-
+  
   //config
   // const ipcAddr = config.get('ipcAddr');
   // const ipcAddr = "/Users/natalieung/blockchaintest/privEth/geth.ipc"

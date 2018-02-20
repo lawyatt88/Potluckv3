@@ -13,7 +13,7 @@ import {me, fetchContracts, fetchAllItems, fetchCompletedContracts, fetchInbox} 
  */
 class Routes extends Component {
   componentDidMount() {
-    this.props.loadInitialData()
+      this.props.loadInitialData()
   }
 
   render() {

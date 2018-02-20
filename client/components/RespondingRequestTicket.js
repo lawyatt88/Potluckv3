@@ -12,38 +12,36 @@ const RespondingRequestTicket = (props) => {
     
     //first items belong to otherUser
     const contractInQuestion = inbox[+contractId].contract
-    
-    console.log('contractInQuestion', contractInQuestion)
     const otherUserName = inbox[+contractId].otherUser.username
 
     const resAssociation = inbox[+contractId].associations.find(assoc => assoc.userId === currentUser.id)
-    let resContractItems
+    let resContractItems = null
+    console.log('resAssociation.itemIds', resAssociation.itemIds)
     if (resAssociation.itemIds) {
         let resItemIds = resAssociation.itemIds.split(", ")
+        console.log('resITemIds', resItemIds)
         if (resItemIds) {
             resContractItems = resItemIds.map(oneItemId => {
                 return items.find(item => +item.id === +oneItemId)
             })
         }
-        console.log('resCONTRACTITEMS', resContractItems)
     }
+    console.log('resCONTRACTITEMS', resContractItems)
     
 
     //initiator 
     const otherUserId = inbox[+contractId].otherUser.id
     const otherUser = inbox[+contractId].otherUser
-    console.log('otherUserId', otherUserId)
     const initAssociation = inbox[+contractId].associations.find(assoc => assoc.userId === otherUserId)
-    console.log('initAssociation', initAssociation)
-        let initItemIds = initAssociation.itemIds.split(", ")
-        let initContractItems
-        if (initItemIds) {
-            initContractItems = initItemIds.map(oneItemId => {
-                return items.find(item => +item.id === +oneItemId)
-            })
-        }
+    let initItemIds = initAssociation.itemIds.split(", ")
+    let initContractItems
+    if (initItemIds) {
+        initContractItems = initItemIds.map(oneItemId => {
+            return items.find(item => +item.id === +oneItemId)
+        })
+    }
+    console.log('initCONTRACTITEMS', initContractItems)
     
-
     let display
     switch (contractInQuestion.status) {
         case 'Created':
@@ -104,49 +102,46 @@ const RespondingRequestTicket = (props) => {
                         </div>
                         </div>
                     }
-                        {resAssociation.itemIds &&
-                            <div>
+                    {resAssociation.itemIds &&
+                        <div>
+                            <h4>{`Your response has been sent!`}</h4>
+                            <hr />
                             <div className="requested-items">
-                            <h3>Requested from you:</h3>
-                            <ul className="request-ticket-card"  >
-                                {initContractItems &&
-                                    initContractItems.map(item => <li key={item.id}>{item.name}</li>)}
-                            </ul>
-                            <h3>Your request:</h3>
-                            <ul className="request-ticket-card"  >
-                            {resContractItems &&
-                                resContractItems.map(item => <li key={item.id}>{item.name}</li>)}
-                            </ul>
-                        </div>
-                        <hr />
-                        <h4>{`Your response has been sent! ${otherUserName} is considering your request!`}</h4>
-                        
-                    </div>}
+                                <h3>Requested from you:</h3>
+                                <ul className="request-ticket-card"  >
+                                    {initContractItems &&
+                                        initContractItems.map(item => <li key={item.id}>{item.name}</li>)}
+                                </ul>
+                                <h3>Your request:</h3>
+                                <ul className="request-ticket-card"  >
+                                {resContractItems &&
+                                    resContractItems.map(item => <li key={item.id}>{item.name}</li>)}
+                                {offer &&
+                                    offer.map(item => <li key={item.id}>{item.name}</li>)}
+                                </ul>
+                            </div> 
+                        </div>}
                     </div>
                     )
             break;
         case 'SecondReview':
             display =
-                (<div className="requested-items">
-                    <button type="button" className="btn btn-primary" onClick={() => approveSwapHandler(contractInQuestion)}>
-                        Let's swap!
-                </button>
-                    <h3>Requested from you:</h3>
-                    <ul className="request-ticket-card"  >
-                        {reqContractItems &&
-                            <li>
-                                <ItemCard itemOwnerId={currentUser.id} items={reqContractItems} path={props.match.path} inRequest="true" />
-                            </li>
-                        }
-                    </ul>
-                    <h3>Your request:</h3>
-                    <ul className="request-ticket-card"  >
-                    {resContractItems &&
-                        <li>
-                            <ItemCard itemOwnerId={currentUser.id} items={resContractItems} path={props.match.path} inRequest="true" />
-                        </li>
-                    }
-                    </ul>
+                (resAssociation.itemIds &&
+                <div>
+                    <h4>{`${otherUserName} is considering your trade!`}</h4> 
+                    <hr />
+                    <div className="requested-items">
+                        <h3>Requested from you:</h3>
+                        <ul className="request-ticket-card"  >
+                            {initContractItems &&
+                                initContractItems.map(item => <li key={item.id}>{item.name}</li>)}
+                        </ul>
+                        <h3>Your request:</h3>
+                        <ul className="request-ticket-card"  >
+                        {resContractItems &&
+                            resContractItems.map(item => <li key={item.id}>{item.name}</li>)}
+                        </ul>
+                    </div>
                 </div>)
             break;
         case 'Pending':

@@ -35,12 +35,12 @@ console.log('HIIIIIII')
             contractId: contract.id,
             userId: req.body.currentUserId,
             itemIds: req.body.itemIds,
-            initiator: false,
+            initiator: true,
         },
         {
             contractId: contract.id,
             userId: req.body.soliciteeId,
-            initiator: true,
+            initiator: false,
         }])
         return contract
     })
