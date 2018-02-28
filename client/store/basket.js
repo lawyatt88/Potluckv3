@@ -21,7 +21,6 @@ const defaultBasket = []
  */
 const getBasket = basket => ({ type: GET_BASKET, basket })
 export const addToBasket = item => ({ type: ADD_BASKET_ITEM, item })
-export const removeFromBasket = itemId => ({ type: REMOVE_BASKET_ITEM, itemId })
 export const removeBasket = () => ({ type: REMOVE_BASKET })
 /**
  * THUNK CREATORS
@@ -55,15 +54,20 @@ axios
 
 export const updateBasket = item => dispatch =>
 axios
-  .put('/api/basket/update', item)
+  .put('/api/basket/add', item)
   .then(res => dispatch(addToBasket(res.data)))
   .catch(err => console.log(err))
+
+  export const removeFromBasket = itemId => dispatch =>
+  axios
+    .put('/api/basket/remove', {itemId})
+    .then(res => dispatch(fetchBasket()))
+    .catch(err => console.log(err))
 
 export const submitBasket = itemIds => (dispatch, getState) =>
 axios
   .put('/api/basket/delete', {itemIds})
   .then(res => {
-    console.log('res.data', res.data)
     dispatch(fetchBasket())
     //dispatch(getInEscrowItems(res.data.inEscrow))
 //console.log(res.data.inEscrow)

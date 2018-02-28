@@ -64,14 +64,12 @@ const ItemCard = (props) => {
                 <div className="col-2" onClick={clickHandler}>{buttonText}</div>
             </div>
         )
-        console.log('RETURNDISPLAY', returnDisplay)
         return returnDisplay
     }
 
     console.log('ITEMS IN ITEMCARD', items)
     console.log('ITEM IN ITEMCARD', item)
     const display = items ? items.map(ownersItem => cardBody(ownersItem)) : cardBody(item)
-    console.log('DISPLAY', display)
 
     return (
         <div className="card w-100">
@@ -96,7 +94,7 @@ const mapDispatch = (dispatch, ownProps) => {
             dispatch(removeFromMyMarket(singleItem.id))
         },
         handleRemoveFromBasket: (event, itemId, userId) => {
-            dispatch(removeFromBasket(itemId, userId))
+            dispatch(removeFromBasket(itemId))
             dispatch(returnToMyMarketThunk(itemId))
         },
         handleAddToOffer: (event, singleItem, userId) => {
@@ -106,7 +104,7 @@ const mapDispatch = (dispatch, ownProps) => {
         handleRemoveFromOffer: (event, itemId, userId) => {
             dispatch(removeFromOffer(itemId, userId))
             dispatch(returnToMyMarketThunk(itemId))
-        },
+        }
     }
 }
 
