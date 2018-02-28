@@ -37,8 +37,6 @@ router.put('/delete', (req, res, next) => {
     console.log('resolvedITems', rUpdatedItems)
     req.session.basket = newBasket
     req.session.inEscrow = [...inEscrow, ...rUpdatedItems]
-    console.log('basket', basket)
-    console.log('newBasket', newBasket)
     res.send(200)
   })
   .catch(err => console.log(err))
@@ -46,6 +44,7 @@ router.put('/delete', (req, res, next) => {
 
 router.delete('/', (req, res, next) => {
   req.session.basket = []
+  req.session.inEscrow = []
   res.sendStatus(204)
 })
 
