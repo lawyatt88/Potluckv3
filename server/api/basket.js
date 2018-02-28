@@ -18,12 +18,26 @@ router.put('/update', (req, res, next) => {
 })
 
 router.put('/delete', (req, res, next) => {
-    const { basket } = req.session
-    let newBasket = basket.filter(item => {
-        return +item.id !== +req.body.itemId
-    })
+  let { basket, inEscrow } = req.session
+  const itemIds = req.body.itemIds.split(', ')
+  console.log('itemIds', itemIds)
+  let newBasket = basket.filter(item => {
+    return !itemIds.includes(item.id.toString())
+  })
+  let updatedItemPromises = itemIds.map(itemId => {
+    return Item.findById(+itemId)
+    .then(item => item.update({status: 'InEscrow'}))
+  })
+  Promise.all(updatedItemPromises)
+  .then(rUpdatedItems => {
+    console.log('resolvedITems', rUpdatedItems)
     req.session.basket = newBasket
+    req.session.inEscrow = [...inEscrow, ...rUpdatedItems]
+    console.log('basket', basket)
+    console.log('newBasket', newBasket)
     res.send(200)
+  })
+  .catch(err => console.log(err))
 })
 
 router.delete('/', (req, res, next) => {

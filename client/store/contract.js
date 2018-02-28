@@ -1,7 +1,8 @@
 import axios from 'axios'
 import history from '../history'
-import {fetchInbox} from './inbox'
-import {updateBasket} from './basket'
+import { fetchInbox } from './inbox'
+import { updateBasket } from './basket'
+import { submitBasket } from './index';
 
 /**
  * ACTION TYPES
@@ -30,26 +31,18 @@ export const fetchContracts = () => dispatch => {
       .then(res => dispatch(getContracts(res.data)))
       .then(res => dispatch(fetchInbox()))
       .catch(err => console.log(err))
-      // let data = defaultMarket.find(item => item.id === itemId)
-      // dispatch(returnToMyMarket(data))
 }
 
 export const createContractApi = (items, currentUser, soliciteeId) => dispatch => {
   let currentUserId = currentUser.id
-  let allItems = items.map(item => item.name).join(', ');
-  let itemIds = []
+  let itemIds = items.map(item => item.id).join(', ');
   let contractAddress = 12345
-  items.forEach(itemObj => {
-    console.log('ITEM', itemObj)
-    dispatch(updateBasket(itemObj))
-    itemIds.push(itemObj.id)
-  })
-  itemIds = itemIds.join(', ')
-    axios
-      .post('/api/contracts', {contractAddress, currentUserId, soliciteeId, itemIds})
-      .then(res => dispatch(addContract(res.data)))
-      .then(res => dispatch(fetchInbox()))
-      .catch(err => console.log(err))
+  axios
+    .post('/api/contracts', {contractAddress, currentUserId, soliciteeId, itemIds})
+    .then(res => dispatch(addContract(res.data)))
+    .then(res => dispatch(submitBasket(itemIds)))
+    .then(res => dispatch(fetchInbox()))
+    .catch(err => console.log(err))
 }
 
 export const updateContractAssoc = (contractId, soliciteeId, itemIds) => dispatch => {
@@ -126,6 +119,7 @@ export default function(state = defaultContracts, action) {
   switch (action.type) {
     case GET_CONTRACTS:
         return [...state, ...action.contracts]
+
     case ADD_CONTRACT:
         return [...state, action.contract]
 

@@ -50,7 +50,6 @@ export const fetchBasket = () => dispatch =>
 axios
   .get('/api/basket')
   .then(res => {
-    console.log('I AM RES.DATA', res.data)
     dispatch(getBasket(res.data || defaultBasket))})
   .catch(err => console.log(err))
 
@@ -60,23 +59,15 @@ axios
   .then(res => dispatch(addToBasket(res.data)))
   .catch(err => console.log(err))
 
-export const deleteLineItem = productId => dispatch =>
+export const submitBasket = itemIds => (dispatch, getState) =>
 axios
-  .put('/api/basket/delete', { productId })
-  .then(() => axios.get('/api/basket'))
-  .then(res => dispatch(getBasket(res.data)))
-  .catch(err => console.log(err))
-
-export const submitBasket = orderInfo => (dispatch, getState) =>
-axios
-  .post('/api/orders', orderInfo)
+  .put('/api/basket/delete', {itemIds})
   .then(res => {
-    dispatch(getBasketOrder(res.data))
-    return res.data
+    console.log('res.data', res.data)
+    dispatch(fetchBasket())
+    //dispatch(getInEscrowItems(res.data.inEscrow))
+//console.log(res.data.inEscrow)
   })
-  .then(order => history.push(`/checkout-confirm/${order.id}`))
-  .then(axios.delete('/api/basket'))
-  .then(dispatch(resetBasket()))
   .catch(err => console.log(err))
 
 export const clearBasket = () =>
