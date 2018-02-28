@@ -6,8 +6,9 @@ import {createContractApi} from './contract'
  * ACTION TYPES
  */
 const GET_BASKET = 'GET_BASKET'
-const ADD_BASKET_ITEM = 'GET_BASKET_ITEM'
+const ADD_BASKET_ITEM = 'ADD_BASKET_ITEM'
 const REMOVE_BASKET_ITEM = 'REMOVE_BASKET_ITEM'
+const REMOVE_BASKET = 'REMOVE_BASKET'
 
 
 /**
@@ -19,7 +20,9 @@ const defaultBasket = []
  *
  */
 const getBasket = basket => ({ type: GET_BASKET, basket })
+export const addToBasket = item => ({ type: ADD_BASKET_ITEM, item })
 export const removeFromBasket = itemId => ({ type: REMOVE_BASKET_ITEM, itemId })
+export const removeBasket = () => ({ type: REMOVE_BASKET })
 /**
  * THUNK CREATORS
  */
@@ -46,13 +49,15 @@ export const removeFromBasket = itemId => ({ type: REMOVE_BASKET_ITEM, itemId })
 export const fetchBasket = () => dispatch =>
 axios
   .get('/api/basket')
-  .then(res => dispatch(getBasket(res.data || defaultBasket)))
+  .then(res => {
+    console.log('I AM RES.DATA', res.data)
+    dispatch(getBasket(res.data || defaultBasket))})
   .catch(err => console.log(err))
 
 export const updateBasket = item => dispatch =>
 axios
   .put('/api/basket/update', item)
-  .then(() => dispatch(fetchBasket()))
+  .then(res => dispatch(addToBasket(res.data)))
   .catch(err => console.log(err))
 
 export const deleteLineItem = productId => dispatch =>
@@ -74,19 +79,35 @@ axios
   .then(dispatch(resetBasket()))
   .catch(err => console.log(err))
 
+export const clearBasket = () =>
+  dispatch => {
+    axios.delete('/api/basket')
+    .then(_ => {
+      dispatch(removeBasket())
+      history.push('/login')
+    })
+    .catch(err => console.log(err))
+  }
+
 /**
  * REDUCER
  */
 export default function(state = defaultBasket, action) {
   switch (action.type) {
     case GET_BASKET:
-        return action.item
+      return action.basket
+    
+    case ADD_BASKET_ITEM:
+      return [...state, action.item]
 
     case REMOVE_BASKET_ITEM:
-    console.log("ACTION.ITEMID", action.itemId)
-    return state.filter(item => {
+      console.log("ACTION.ITEMID", action.itemId)
+      return state.filter(item => {
         return item.id !== +action.itemId
       })
+    
+    case REMOVE_BASKET:
+      return defaultBasket
 
     default:
       return state

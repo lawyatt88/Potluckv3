@@ -21,7 +21,6 @@ router.get('/completed', (req, res, next) => {
 
 router.post('/', (req, res, next) => {
   // contractAddress++
-console.log('HIIIIIII')
     Contract.create({contractAddress})
     .then(newContract => {
       return Promise.all([newContract])

@@ -50,7 +50,7 @@ export default function(state = defaultInbox, action) {
       return action.inbox
 
     case CLEAR_INBOX:
-      return Object.assign({}, defaultInbox)
+      return defaultInbox
 
     default:
       return state

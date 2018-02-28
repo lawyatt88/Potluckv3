@@ -1,4 +1,5 @@
 const router = require('express').Router()
+const { Item, Contract, ContractAssociations, User } = require("../db/models");
 
 router.get('/', (req, res, next) => {
   const { basket } = req.session
@@ -8,7 +9,12 @@ router.get('/', (req, res, next) => {
 router.put('/update', (req, res, next) => {
   const { basket } = req.session
   basket.push(req.body)
-  res.send(200)
+  // Item.findById(req.body.id)
+  // .then(item => {
+  //   return item.update({status: 'InEscrow'})
+  // })
+  // .then(updatedItem => res.json(updatedItem))
+  res.json(req.body)
 })
 
 router.put('/delete', (req, res, next) => {

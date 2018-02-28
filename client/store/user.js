@@ -2,6 +2,7 @@ import axios from 'axios'
 import history from '../history'
 import {fetchInbox, clearInbox} from './inbox'
 import {startGethInst} from './geth'
+import { fetchBasket, clearBasket } from './basket';
 
 
 /**
@@ -36,6 +37,7 @@ export const auth = (email, password, method) =>
     axios.post(`/auth/${method}`, { email, password })
       .then(res => {
         dispatch(getUser(res.data))
+        dispatch(fetchBasket())
         dispatch(fetchInbox())
         //dispatch(startGethInst(res.data))
         history.push('/community')
@@ -51,6 +53,7 @@ export const logout = () =>
     .then(_ => {
       dispatch(removeUser())
       dispatch(clearInbox())
+      dispatch(clearBasket())
       history.push('/login')
     })
     .catch(err => console.log(err))

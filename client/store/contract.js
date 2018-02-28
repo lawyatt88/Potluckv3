@@ -1,6 +1,7 @@
 import axios from 'axios'
 import history from '../history'
 import {fetchInbox} from './inbox'
+import {updateBasket} from './basket'
 
 /**
  * ACTION TYPES
@@ -39,6 +40,8 @@ export const createContractApi = (items, currentUser, soliciteeId) => dispatch =
   let itemIds = []
   let contractAddress = 12345
   items.forEach(itemObj => {
+    console.log('ITEM', itemObj)
+    dispatch(updateBasket(itemObj))
     itemIds.push(itemObj.id)
   })
   itemIds = itemIds.join(', ')
