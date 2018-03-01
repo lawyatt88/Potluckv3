@@ -171,3 +171,11 @@ body {
     height: auto;
   }
 
+  .pending-item svg {
+    display: block;
+  }
+
+  .pending-item:first-child svg {
+    margin-bottom: .5em
+  }
+

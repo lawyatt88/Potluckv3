@@ -24,7 +24,7 @@ const ItemCard = (props) => {
                 break;
 
                 case '/market':
-                    buttonText = <i className="fa fa-plus" aria-hidden="true" />
+                    buttonText = (singleItem.status === 'InEscrow') ? <div className="pending-item"><i className="fas fa-clock" /><i className="fa fa-plus" aria-hidden="true" /></div> : <i className="fa fa-plus" aria-hidden="true" />
                     clickHandler = event => props.handleAddToBasket(event, singleItem, currentUser.id)
                 break;
 
