@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
 import {withRouter, Link} from 'react-router-dom'
@@ -10,10 +10,14 @@ import {logout, stopGethInst} from '../store'
  *  else common to our entire app. The 'picture' inside the frame is the space
  *  rendered out by the component's `children`.
  */
-const Main = (props) => {
+class Main extends Component {
+  componentDidMount(){
+    this.topNavHeight = this.refs.topnav.clientHeight
+  }
 
-  console.log('i am props', props)
-  const {children, isLoggedIn, user, inbox, basket, match} = props
+  render(){
+  console.log('i am props', this.props)
+  const {children, isLoggedIn, user, inbox, basket, match} = this.props
   console.log('LOCATION PATH', location.pathname)
 
   let title
@@ -41,34 +45,30 @@ const Main = (props) => {
     case '/signup': title = 'POTLUCK' 
     break;
     default: title = "Let's make a swap!"
-
   }
 
-
-
   return (
-    <div>
+    <div style={{paddingTop: this.topNavHeight, paddingBottom: 80}}>
       { location.pathname === ('/' || '/login') &&
-        <div id="title" className="main navbar fixed-top"><h1>{title}</h1></div>
+        <div ref="topnav" id="title" className="main navbar fixed-top"><h1>{title}</h1></div>
       }{ location.pathname !== '/' &&
-        <div id="title" className="navbar fixed-top"><h3>{title}</h3></div>
+        <div ref="topnav" id="title" className="navbar fixed-top"><h3>{title}</h3></div>
       }
-        {
-          isLoggedIn &&
-          <nav id="main" className="navbar fixed-bottom nav-fill">
-              {/* The navbar will show these links after you log in */}
-              <Link to="/community" className="nav-item" ><i className="fas fa-users" /></Link>
-              <Link to="/market" className="nav-item"><i className="fas fa-lemon" /></Link>
-              <Link to="/pantry" className="nav-item"><img src="./icons/pantry-icon-solid-01.png" className="menu-icon" /></Link>
-              <Link to="/basket" className="nav-item"><i className="fas fa-shopping-basket" />({basket.length})</Link>
-              <Link to="/inbox" className="nav-item"><i className="fas fa-envelope" />({Object.keys(inbox).length})</Link>
-              <Link to="/account" className="nav-item"><i className="fas fa-cog" /></Link>
-            </nav>
-        }
-      <hr className="title-hr"/>
-       {children}
+      {
+        isLoggedIn &&
+        <nav ref="bottomnav" id="main" className="navbar fixed-bottom nav-fill">
+          {/* The navbar will show these links after you log in */}
+          <Link to="/community" className="nav-item" ><i className="fas fa-users" /></Link>
+          <Link to="/market" className="nav-item"><i className="fas fa-lemon" /></Link>
+          <Link to="/pantry" className="nav-item"><img src="./icons/pantry-icon-solid-01.png" className="menu-icon" /></Link>
+          <Link to="/basket" className="nav-item"><i className="fas fa-shopping-basket" />({basket.length})</Link>
+          <Link to="/inbox" className="nav-item"><i className="fas fa-envelope" />({Object.keys(inbox).length})</Link>
+          <Link to="/account" className="nav-item"><i className="fas fa-cog" /></Link>
+        </nav>
+      }
+      {children}
     </div>
-  )
+  )}
 }
 
 /**

@@ -17,7 +17,6 @@ const ItemCard = (props) => {
         console.log('SINGLEITEM', singleItem)
             switch (props.path) {
                 case '/pantry':
-                
                     buttonText = inRequestTicket ? <i className="fa fa-plus" aria-hidden="true" /> : <i className="fa fa-minus" aria-hidden="true" />
                     // clickHandler = event => props.handleAddToOffer(event, singleItem, currentUser.id)
                     clickHandler = inRequestTicket ? event => props.handleAddToOffer(event, singleItem, currentUser.id) : () => {}

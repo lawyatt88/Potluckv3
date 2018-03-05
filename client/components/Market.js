@@ -13,7 +13,9 @@ const Market = (props) => {
             <ul className="market-list">
                 {items &&
                     items.filter(item => {
-                      return item.userId !== props.user.id
+                        //filter out items I have already requested
+                        let myMarketItem = item.status
+                        return item.userId !== props.user.id
                     })
                     .map(item => {
                         return (
@@ -31,7 +33,8 @@ const Market = (props) => {
 const mapState = (state) => {
     return {
         items: state.market,
-        user: state.user
+        user: state.user,
+        inbox: state.inbox
     }
 }
 
