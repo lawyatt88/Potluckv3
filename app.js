@@ -2,7 +2,7 @@ const express = require('express');
 const exphbs = require('express-handlebars');
 const bodyParser = require('body-parser');
 const compression = require('compression')
-const Web3 = require('web3');
+// const Web3 = require('web3');
 const net = require('net');
 const config = require('config');
 const compiledContract = require('./contracts/contractv1');
@@ -50,10 +50,11 @@ const createApp = () => {
   app.use((req, res, next) => {
     if (!req.session.inbox) req.session.inbox = {}
     if (!req.session.basket) req.session.basket = []
-    console.log('REQ.SESSION', req.session)
+    if (!req.session.inEscrow) req.session.inEscrow = []
+    console.log('req.session', req.session)
     next()
   })
-
+  
   //config
   // const ipcAddr = config.get('ipcAddr');
   // const ipcAddr = "/Users/natalieung/blockchaintest/privEth/geth.ipc"
@@ -64,7 +65,7 @@ const createApp = () => {
   // auth and api routes
   app.use('/api', require('./server/api'))
   app.use('/auth', require('./server/auth'))
-  app.use('/web3', require('./server/web3'))
+  // app.use('/web3', require('./server/web3'))
 
 
   // static file serving middleware
@@ -85,15 +86,13 @@ const createApp = () => {
 
 // const ipcAddr = "/Users/natalieung/blockchaintest/privEth/geth.ipc"
 // const configPort = config.get('port');
-const configPort = 4001
+// const configPort = 4001
 
-const PORT = process.env.PORT || configPort || 4000;
+const PORT = (process.env.PORT || 4001);
 
 const startListening = () => {
   // start listening (and create a 'server' object representing our server)
   const server = app.listen(PORT, () => console.log(`Mixing it up on port ${PORT}`))
-
-
 
 }
 

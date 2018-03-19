@@ -10,6 +10,10 @@ const Item = db.define('item', {
   iconUrl: {
     type: Sequelize.STRING,
     defaultValue: './icons/foodbunch2.svg'
+  },
+  status: {
+    type: Sequelize.ENUM('Available', 'InEscrow', 'Traded'),
+    defaultValue: 'Available'
   }
 })
 

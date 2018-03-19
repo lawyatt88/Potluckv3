@@ -1,7 +1,6 @@
 import React from 'react'
 import ItemCard from './ItemCard'
 import {connect} from 'react-redux'
-import axios from 'axios'
 
 
 const Market = (props) => {
@@ -10,11 +9,13 @@ const Market = (props) => {
 
     return (
         <div>
-            <h3>Market</h3>
+            {/*<h3>Market</h3>*/}
             <ul className="market-list">
                 {items &&
                     items.filter(item => {
-                      return item.userId !== props.user.id
+                        //filter out items I have already requested
+                        let myMarketItem = item.status
+                        return item.userId !== props.user.id
                     })
                     .map(item => {
                         return (
@@ -32,7 +33,8 @@ const Market = (props) => {
 const mapState = (state) => {
     return {
         items: state.market,
-        user: state.user
+        user: state.user,
+        inbox: state.inbox
     }
 }
 

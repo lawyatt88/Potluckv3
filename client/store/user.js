@@ -1,7 +1,8 @@
 import axios from 'axios'
 import history from '../history'
-import {fetchInbox} from './inbox'
-import {startGethInst} from './geth'
+import {fetchInbox, clearInbox} from './inbox'
+import { startGethInst } from './geth'
+import { fetchBasket, clearBasket } from './basket';
 
 
 /**
@@ -36,9 +37,10 @@ export const auth = (email, password, method) =>
     axios.post(`/auth/${method}`, { email, password })
       .then(res => {
         dispatch(getUser(res.data))
+        dispatch(fetchBasket())
         dispatch(fetchInbox())
-        dispatch(startGethInst(res.data))
-        history.push('/market')
+        //dispatch(startGethInst(res.data))
+        history.push('/community')
 
       }, authError => { // rare example: a good use case for parallel (non-catch) error handler
         dispatch(getUser({error: authError}))
@@ -46,13 +48,17 @@ export const auth = (email, password, method) =>
       .catch(dispatchOrHistoryErr => console.error(dispatchOrHistoryErr))
 
 export const logout = () =>
-  dispatch =>
+  dispatch => {
     axios.post('/auth/logout')
-      .then(_ => {
-        dispatch(removeUser())
-        history.push('/login')
-      })
-      .catch(err => console.log(err))
+    .then(_ => {
+      dispatch(removeUser())
+      dispatch(clearInbox())
+      dispatch(clearBasket())
+      history.push('/login')
+    })
+    .catch(err => console.log(err))
+  }
+    
 
 /**
  * REDUCER

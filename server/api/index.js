@@ -7,7 +7,7 @@ router.use('/contracts', require('./contracts'))
 router.use('/messages', require('./messages'))
 router.use('/contractassociations', require('./contractassociations'))
 router.use('/inbox', require('./inbox'))
-
+router.use('/basket', require('./basket'))
 
 router.use((req, res, next) => {
   const error = new Error('Not Found')

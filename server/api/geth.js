@@ -1,5 +1,6 @@
 const router = require('express').Router()
 const geth = require('geth-private')
+const path = require('path');
 const { User } = require('../db/models')
 
 let gethInstances = [] //keeping track of running insts
@@ -12,8 +13,8 @@ router.post('/geth-start-script', (req, res, next) => {
   //check to see if the node is running
   if (!ipcAddresses.includes(req.body.user.ipcAddr)) {//declaring node geth instance
     let inst = geth({
-      balance: 2000,
-      verbose: true, //for console log
+      autoMine: true,
+      verbose: false, //for console log
       gethOptions: {
       datadir: `./nodeDir/${req.body.user.username}`,
       networkid: 800,
@@ -41,8 +42,8 @@ router.post('/geth-start-script', (req, res, next) => {
       }
     })
     //Keeping track of what nodes have geth running for the sake of the other scripts
-    gethInstances.push({ipcAddr: req.body.user.ipcAddr, inst: inst})
-    ipcAddresses.push(req.body.user.ipcAddr)
+    gethInstances.push({ipcAddr: path.normalize(req.body.user.ipcAddr), inst: inst})
+    ipcAddresses.push(path.normalize(req.body.user.ipcAddr))
   }
 
   //always get node to start instance from our node array to ensure its not duplicate
@@ -71,8 +72,8 @@ router.post('/geth-start-script', (req, res, next) => {
   .then( enode => {
     enodes.push(enode)
 
-   // console.log("Starting to mine...")
-     //currentNode.inst.consoleExec('miner.start()')
+    console.log("Starting to mine...")
+     currentNode.inst.consoleExec('miner.start()')
 
   })
   .catch(function(err) {

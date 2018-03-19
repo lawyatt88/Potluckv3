@@ -1,4 +1,4 @@
-const Web3 = require('web3');
+// const Web3 = require('web3');
 const net = require('net');
 const path = require('path');
 // const config = require('config');
@@ -40,6 +40,7 @@ let byteCode;
 let ProduceSwapContract;
 
 router.use((req, res, next) => {
+  console.log("REQ.BODY.CurrentUser: ", req.body.currentUser)
   const relIpc = req.body.currentUser.ipcAddr;
   ipcAddr = path.join(__dirname, relIpc, '/geth.ipc')
   web3 = new Web3(ipcAddr, net);
@@ -109,6 +110,30 @@ router.post('/contract', function(req, res) {
           console.log(`Item with address ${contractAddress} updated.`);
           res.json(receipt.contractAddress)
           // res.redirect('/contract');
+        }
+      );
+    });
+  }
+});
+
+router.post('/complete', function(req, res) {
+  const contractAddress = req.body.contractAddress;
+  const currentUser = req.body.currentUser
+
+  if (web3.utils.isAddress(contractAddress)) {
+    console.log('is valid address');
+    web3.eth.personal.unlockAccount(coinbaseAddress, coinbasePassphrase, function(err, uares) {
+      console.log('account unlocked');
+      ProduceSwapContract.options.address = contractAddress;
+      ProduceSwapContract.methods.completeSwap().send({from: coinbaseAddress, gas: 1000000})
+        .on('error', function (error) {
+          console.log('Contract creation error:' + error);
+        })
+        .on('receipt', function (receipt) {
+          console.log(`The receipt from the end of WEB3 complete`, receipt);
+          res.json(receipt.contractAddress)
+          // res.redirect('/contract');
+          // when receipt says swap completed, that's when we want to dispatch updateContractStatus
         }
       );
     });

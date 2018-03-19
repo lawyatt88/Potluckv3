@@ -3,8 +3,8 @@ import { connect } from 'react-redux'
 import { Route, Switch, Router } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import history from './history'
-import {Main, Login, Signup, UserHome, Market, Basket, Inbox, Account, MessageInbox, Pantry, RequestTicket} from './components'
-import {me, fetchContracts, fetchAllItems, fetchInbox} from './store'
+import {Main, Login, Signup, UserHome, Market, Basket, Inbox, Account, MessageInbox, Pantry, RequestTicket, Ledger} from './components'
+import {me, fetchContracts, fetchAllItems, fetchCompletedContracts, fetchInbox, fetchBasket} from './store'
 
 
 
@@ -13,11 +13,11 @@ import {me, fetchContracts, fetchAllItems, fetchInbox} from './store'
  */
 class Routes extends Component {
   componentDidMount() {
-    this.props.loadInitialData()
+      this.props.loadInitialData()
   }
 
   render() {
-    const {isLoggedIn} = this.props
+    const {isLoggedIn, inbox} = this.props
 
     return (
       <Router history={history}>
@@ -30,13 +30,14 @@ class Routes extends Component {
               isLoggedIn &&
               <Switch>
               {/* Routes placed here are available to logged in users */}
-              <Route path="/market" component={Market} />
-              <Route path="/basket" component={Basket} />
-              <Route path="/inbox" component={Inbox} />
-              <Route path="/account" component={Account} />
-              <Route path="/messageinbox" component={MessageInbox} />
-              <Route path="/pantry" component={Pantry} />
-              <Route path="/:id" component={RequestTicket} />
+              <Route exact path="/market" component={Market} />
+              <Route exact path="/community" component={Ledger} />
+              <Route exact path="/basket" component={Basket} />
+              <Route exact path="/inbox" component={Inbox} />
+              <Route exact path="/account" component={Account} />
+              <Route exact path="/messageinbox" component={MessageInbox} />
+              <Route exact path="/pantry" component={Pantry} />
+              <Route path="/:id" component={RequestTicket} inbox={inbox} />
               </Switch>
             }
             {/* Displays our Login component as a fallback */}
@@ -53,10 +54,9 @@ class Routes extends Component {
  */
 const mapState = (state) => {
   return {
-    // Being 'logged in' for our purposes will be defined has having a state.user that has a truthy id.
-    // Otherwise, state.user will be an empty object, and state.user.id will be falsey
     isLoggedIn: !!state.user.id,
-    currentUser: state.user
+    currentUser: state.user,
+    inbox: state.inbox
   }
 }
 
@@ -66,7 +66,8 @@ const mapDispatch = (dispatch) => {
       dispatch(me())
       dispatch(fetchContracts())
       dispatch(fetchAllItems())
-      dispatch(fetchInbox())
+      dispatch(fetchCompletedContracts())
+      dispatch(fetchBasket())
     }
   }
 }

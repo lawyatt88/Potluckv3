@@ -3,12 +3,14 @@ import {connect} from 'react-redux'
 import { withRouter, Link } from 'react-router-dom'
 import ItemCard from './ItemCard'
 import Modal from './Modal'
+import toast from 'toastr'
 
-import { createContractWeb3, removeFromBasket, removeFromMyMarket } from '../store'
+import { createContractWeb3, createContractApi, removeFromBasket, removeFromMyMarket } from '../store'
 
 
 
 const Basket = (props) => {
+    toast.options.positionClass = "toast-top-right"
     let display, hasItems, hasItemsByOwner, cardDisplay = []
     let itemsByOwner = new Map()
 
@@ -28,7 +30,7 @@ const Basket = (props) => {
             <div key={ itemOwner }>
                 <ItemCard itemOwnerId={itemOwner} items={ownersItems} path={props.match.path} />
                 <button type="button" className="btn btn-primary" onClick={event => props.sendRequestHandler(event, ownersItems, itemOwner, currentUser)}>
-                    {modalIcon}
+                    Send Request {modalIcon}
                 </button>
             </div>)
         cardDisplay.push(cardBody)
@@ -55,12 +57,6 @@ const Basket = (props) => {
     return (
         <div>
             {display}
-                {items.length &&
-                    <button type="button" className="btn btn-primary" onClick={event => props.sendBatchRequestHandler(event, items, currentUser)}>
-                        {modalIcon}
-                    </button>
-                }
-                <Modal name="request" body={modalBody} />
         </div>
     )
 }
@@ -76,14 +72,14 @@ const mapDispatch = (dispatch, ownProps) => {
     return {
         sendRequestHandler: (event, items, itemOwner, currentUser) => {
                 const soliciteeId = itemOwner
-                console.log("mapDispatch UserIpcAddr: ", currentUser)
                 console.log('ITEMS', items)
-                dispatch(createContractWeb3(items, currentUser, soliciteeId))
+                // dispatch(createContractWeb3(items, currentUser, soliciteeId))
+                dispatch(createContractApi(items, currentUser, soliciteeId))
                 items.forEach(item => {
                     dispatch(removeFromBasket(item.id))
                     dispatch(removeFromMyMarket(item.id))
                 })
-
+                toast.success('Your request has been sent!')
                 //should items keep a state? pending
         },
         sendBatchRequestHandler: (event, items, currentUser) => {
@@ -92,4 +88,4 @@ const mapDispatch = (dispatch, ownProps) => {
     }
 }
 
-export default connect(mapState, mapDispatch)(Basket)
+export default withRouter(connect(mapState, mapDispatch)(Basket))

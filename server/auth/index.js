@@ -11,12 +11,15 @@ router.post('/login', (req, res, next) => {
         res.status(401).send('Incorrect password')
       } else {
         req.login(user, err => (err ? next(err) : res.json(user)))
-      } 
+      }
     })
     .catch(next)
 })
 
 router.post('/signup', (req, res, next) => {
+  let endIndex = req.body.email.indexOf('@')
+  req.body.username = req.body.email.slice(0, endIndex)
+  req.body.ipcAddr = `../../nodeDir/${req.body.username}`
   User.create(req.body)
     .then(user => {
       req.login(user, err => (err ? next(err) : res.json(user)))
@@ -29,6 +32,7 @@ router.post('/signup', (req, res, next) => {
       }
     })
 })
+
 
 router.post('/logout', (req, res) => {
   req.logout()

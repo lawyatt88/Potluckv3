@@ -1,29 +1,25 @@
 import React from 'react'
-import {connect} from 'react-redux'
+import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
-import Modal from './Modal'
-import { addToBasket, removeFromBasket, returnToMyMarketThunk, removeFromMyMarket, addToOffer, removeFromOffer, createContractWeb3 } from '../store'
-
-
+import { updateBasket, addToBasket, removeFromBasket, returnToMyMarketThunk, removeFromMyMarket, addToOffer, removeFromOffer, createContractWeb3 } from '../store'
 
 const ItemCard = (props) => {
-    const { currentUser, items, item, modalBody, modalIcon, inRequest, ownProps } = props
-    console.log('ITEMCARD ownPROPS', ownProps)
-    let modalButton, buttonText, clickHandler
+    const { currentUser, items, item, inRequest, ownProps } = props
+
+    let buttonText, clickHandler
 
     let inRequestTicket = ownProps.match.path === '/:id'
 
     const cardBody = singleItem => {
+        console.log('SINGLEITEM', singleItem)
             switch (props.path) {
                 case '/pantry':
-                console.log('SINGLEITEM', singleItem)
                     buttonText = inRequestTicket ? <i className="fa fa-plus" aria-hidden="true" /> : <i className="fa fa-minus" aria-hidden="true" />
-                    // clickHandler = event => props.handleAddToOffer(event, singleItem, currentUser.id)
                     clickHandler = inRequestTicket ? event => props.handleAddToOffer(event, singleItem, currentUser.id) : () => {}
                 break;
 
                 case '/market':
-                    buttonText = <i className="fa fa-plus" aria-hidden="true" />
+                    buttonText = (singleItem.status === 'InEscrow') ? <div className="pending-item"><i className="fas fa-clock" /><i className="fa fa-plus" aria-hidden="true" /></div> : <i className="fa fa-plus" aria-hidden="true" />
                     clickHandler = event => props.handleAddToBasket(event, singleItem, currentUser.id)
                 break;
 
@@ -42,9 +38,8 @@ const ItemCard = (props) => {
                     clickHandler = () => {}
               }
 
-
-        console.log('clickHandler', clickHandler)
-        return (
+        let returnDisplay = 
+        (
             <div key={singleItem.id} className="row card-body-wrapper">
                 <div className="col-3">
                     <img src={`${singleItem.iconUrl}`} className="card-icon" />
@@ -54,13 +49,14 @@ const ItemCard = (props) => {
                     {!inRequest &&
                         <div>
                             <p className="card-text">{singleItem.description}</p>
-                            <h6>On offer by {singleItem.user.username}</h6>
+                            {(props.match.path !== '/pantry') && <h6>On offer by {singleItem.user.username}</h6>}
                         </div>
                     }
                 </div>
                 <div className="col-2" onClick={clickHandler}>{buttonText}</div>
             </div>
         )
+        return returnDisplay
     }
 
     const display = items ? items.map(ownersItem => cardBody(ownersItem)) : cardBody(item)
@@ -84,11 +80,11 @@ const mapState = (state, ownProps) => {
 const mapDispatch = (dispatch, ownProps) => {
     return {
         handleAddToBasket: (event, singleItem, userId) => {
-            dispatch(addToBasket(singleItem, userId))
+            dispatch(updateBasket(singleItem))
             dispatch(removeFromMyMarket(singleItem.id))
         },
         handleRemoveFromBasket: (event, itemId, userId) => {
-            dispatch(removeFromBasket(itemId, userId))
+            dispatch(removeFromBasket(itemId))
             dispatch(returnToMyMarketThunk(itemId))
         },
         handleAddToOffer: (event, singleItem, userId) => {
@@ -98,7 +94,7 @@ const mapDispatch = (dispatch, ownProps) => {
         handleRemoveFromOffer: (event, itemId, userId) => {
             dispatch(removeFromOffer(itemId, userId))
             dispatch(returnToMyMarketThunk(itemId))
-        },
+        }
     }
 }
 

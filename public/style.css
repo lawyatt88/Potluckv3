@@ -1,5 +1,9 @@
 body {
-    font-family: sans-serif;
+    font-family: 'Open Sans', sans-serif;
+  }
+
+  #app {
+    height: 100vh;
   }
 
   a {
@@ -14,9 +18,17 @@ body {
     display: block;
   }
 
+  nav#main {
+    text-align: center;
+    background: #fff;
+    border-top: #999 solid 2px;
+  }
+
   nav a {
     display: inline-block;
-    margin: 1em;
+    margin: .5em;
+    color: #000;
+    font-size: 20px
   }
 
   form div {
@@ -26,12 +38,26 @@ body {
 
   #title, h1, h2, h3, h4 {
     font-family: 'Handlee', sans-serif;
-    margin-left: 1.5rem;
-    margin-right: 1.5rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    text-align: center;
+    width: 100%;
+  }
+
+  #title>h3{
+    margin-bottom: 0;
   }
 
   #title {
     text-align: center;
+    padding: 1.5rem;
+    margin-bottom: 0;
+    background-color: #fff;
+    border-bottom: 1px solid rgba(0,0,0,.5);
+  }
+
+  .title-hr {
+    margin: 0!important;
   }
 
   .item-card, .request-ticket-card {
@@ -68,10 +94,11 @@ body {
 
   ul {
     padding-left: 0;
+  
   }
 
   .menu-icon {
-    width: 2rem;
+    width: 3rem;
   }
 
   #addItem {
@@ -82,3 +109,98 @@ body {
   .pantry-title {
     display: inline-block;
   }
+
+  .ledger-list, .market-list {
+    margin-bottom: 0;
+  }
+
+  option {
+    font-size: .75rem;
+  }
+  .requested-items {
+    text-align: center;
+  }
+  .requested-items>button{
+    margin-bottom: 1rem
+  }
+
+  /**
+  * LOGIN STYLE
+  **/
+
+  .login {
+    height: calc(100vh - 81px);
+    background-color: #bced91
+  }
+  .login form {
+    padding: 2rem;
+  }
+
+  .login h1 { color: #fff; text-shadow: 0 0 10px rgba(0,0,0,0.3); letter-spacing:1px; text-align:center; }
+
+  .login input {
+    width: 100%;
+    margin-bottom: 10px;
+    background: rgba(0,0,0,0.3);
+    border: none;
+    outline: none;
+    padding: 10px;
+    font-size: 13px;
+    color: #fff;
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.3);
+    border: 1px solid rgba(0,0,0,0.3);
+    border-radius: 4px;
+    box-shadow: inset 0 -5px 45px rgba(100,100,100,0.2), 0 1px 1px rgba(255,255,255,0.2);
+    -webkit-transition: box-shadow .5s ease;
+    -moz-transition: box-shadow .5s ease;
+    -o-transition: box-shadow .5s ease;
+    -ms-transition: box-shadow .5s ease;
+    transition: box-shadow .5s ease;
+  }
+  input:focus { box-shadow: inset 0 -5px 45px rgba(100,100,100,0.4), 0 1px 1px rgba(255,255,255,0.2); }
+
+  .auth-form-bg {
+    background-color: #BCED91;
+  }
+
+  /*
+  **LEDGER STYLES
+  */
+  .ledger-item-img {
+    height: 2em;
+  }
+
+  .swap-icon {
+    padding: 1em;
+  }
+
+  .card-user-icon {
+    width: 40px;
+    height: 40px;
+    text-align: center;
+    background-color: coral;
+    text-transform: uppercase;
+    color: #ffffff;
+    line-height: 40px;
+    border-radius: 50%;
+    margin-bottom: 0;
+  }
+  .card-user-text {
+    padding: 0 .5em;
+    margin-bottom: 0;
+  }
+
+  .ledger-list .card-title {
+    text-align: center;
+    margin-bottom: 0;
+    font-size: 14px;
+  }
+
+  .pending-item svg {
+    display: block;
+  }
+
+  .pending-item:first-child svg {
+    margin-bottom: .5em
+  }
+
