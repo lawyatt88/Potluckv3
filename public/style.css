@@ -110,8 +110,8 @@ body {
     display: inline-block;
   }
 
-  .ledger-list {
-    height: 110vh;
+  .ledger-list, .market-list {
+    margin-bottom: 0;
   }
 
   option {
@@ -127,10 +127,13 @@ body {
   /**
   * LOGIN STYLE
   **/
-  .login form {
-    height: 84vh;
-    padding: 2rem;
+
+  .login {
+    height: calc(100vh - 81px);
     background-color: #bced91
+  }
+  .login form {
+    padding: 2rem;
   }
 
   .login h1 { color: #fff; text-shadow: 0 0 10px rgba(0,0,0,0.3); letter-spacing:1px; text-align:center; }
