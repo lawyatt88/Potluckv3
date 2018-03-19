@@ -12,7 +12,9 @@ import {logout, stopGethInst} from '../store'
  */
 class Main extends Component {
   componentDidMount(){
+    let {pathname} = this.props.location
     this.topNavHeight = this.refs.topnav.clientHeight
+    this.bottomNavHeight = 80
   }
 
   render(){
@@ -22,11 +24,17 @@ class Main extends Component {
 
   let title
   switch(location.pathname) {
-    case '/': title = 'POTLUCK'
+    case '/': {title = 'POTLUCK'
+    this.bottomNavHeight = 0
+    }
     break;
-    case '/login': title = 'POTLUCK'
+    case '/login': {title = 'POTLUCK'
+    this.bottomNavHeight = 0
+    }
     break;
-    case '/signup': title = 'POTLUCK'
+    case '/signup': {title = 'POTLUCK'
+    this.bottomNavHeight = 0
+    }
     break;
     case '/community': title = 'Community Board'
     break;
@@ -48,12 +56,8 @@ class Main extends Component {
   }
 
   return (
-    <div style={{paddingTop: this.topNavHeight, paddingBottom: 80}}>
-      { location.pathname === ('/' || '/login') &&
-        <div ref="topnav" id="title" className="main navbar fixed-top"><h1>{title}</h1></div>
-      }{ location.pathname !== '/' &&
-        <div ref="topnav" id="title" className="navbar fixed-top"><h3>{title}</h3></div>
-      }
+    <div style={{paddingTop: this.topNavHeight, paddingBottom: this.bottomNavHeight}}>
+      <div ref="topnav" id="title" className="navbar fixed-top"><h3>{title}</h3></div>
       {
         isLoggedIn &&
         <nav ref="bottomnav" id="main" className="navbar fixed-bottom nav-fill">

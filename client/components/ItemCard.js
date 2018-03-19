@@ -1,15 +1,12 @@
 import React from 'react'
-import {connect} from 'react-redux'
+import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
-import Modal from './Modal'
 import { updateBasket, addToBasket, removeFromBasket, returnToMyMarketThunk, removeFromMyMarket, addToOffer, removeFromOffer, createContractWeb3 } from '../store'
 
-
-
 const ItemCard = (props) => {
-    const { currentUser, items, item, modalBody, modalIcon, inRequest, ownProps } = props
+    const { currentUser, items, item, inRequest, ownProps } = props
 
-    let modalButton, buttonText, clickHandler
+    let buttonText, clickHandler
 
     let inRequestTicket = ownProps.match.path === '/:id'
 
@@ -18,7 +15,6 @@ const ItemCard = (props) => {
             switch (props.path) {
                 case '/pantry':
                     buttonText = inRequestTicket ? <i className="fa fa-plus" aria-hidden="true" /> : <i className="fa fa-minus" aria-hidden="true" />
-                    // clickHandler = event => props.handleAddToOffer(event, singleItem, currentUser.id)
                     clickHandler = inRequestTicket ? event => props.handleAddToOffer(event, singleItem, currentUser.id) : () => {}
                 break;
 
@@ -42,9 +38,6 @@ const ItemCard = (props) => {
                     clickHandler = () => {}
               }
 
-
-        console.log('clickHandler', clickHandler)
-
         let returnDisplay = 
         (
             <div key={singleItem.id} className="row card-body-wrapper">
@@ -66,8 +59,6 @@ const ItemCard = (props) => {
         return returnDisplay
     }
 
-    console.log('ITEMS IN ITEMCARD', items)
-    console.log('ITEM IN ITEMCARD', item)
     const display = items ? items.map(ownersItem => cardBody(ownersItem)) : cardBody(item)
 
     return (
