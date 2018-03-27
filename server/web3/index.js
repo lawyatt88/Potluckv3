@@ -1,4 +1,4 @@
-// const Web3 = require('web3');
+const Web3 = require('web3');
 const net = require('net');
 const path = require('path');
 // const config = require('config');
@@ -32,12 +32,7 @@ module.exports = router
 
 // ___________________________________________
 
-let ipcAddr;
-let web3;
-let coinbaseAddress;
-let coinbasePassphrase;
-let byteCode;
-let ProduceSwapContract;
+let ipcAddr, web3, coinbaseAddress, coinbasePassphrase, byteCode, ProduceSwapContract
 
 router.use((req, res, next) => {
   console.log("REQ.BODY.CurrentUser: ", req.body.currentUser)

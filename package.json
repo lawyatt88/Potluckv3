@@ -74,6 +74,17 @@
     "toastr": "^2.1.4",
     "web3": "^1.0.0-beta.29",
     "webpack": "^2.2.1",
-    "webpack-livereload-plugin": "^1.0.0"
-  }
+    "webpack-livereload-plugin": "^1.0.0",
+    "zeppelin-solidity": "1.7.0"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lawyatt88/Potluckv3.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/lawyatt88/Potluckv3/issues"
+  },
+  "homepage": "https://github.com/lawyatt88/Potluckv3#readme"
 }
