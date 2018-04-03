@@ -1,9 +1,9 @@
 const express = require('express');
-const exphbs = require('express-handlebars');
 const bodyParser = require('body-parser');
 const compression = require('compression')
 // const Web3 = require('web3');
 const net = require('net');
+const isPortAvailable = require('is-port-available');
 const config = require('config');
 const compiledContract = require('./contracts/contractv1');
 const morgan = require('morgan')
@@ -29,7 +29,6 @@ const createApp = () => {
   // logging middleware
   app.use(morgan('dev'))
 
-
   // body parsing middleware
   app.use(bodyParser.json())
   app.use(bodyParser.urlencoded({ extended: true }));
@@ -44,6 +43,7 @@ const createApp = () => {
     resave: false,
     saveUninitialized: false
   }))
+
   app.use(passport.initialize())
   app.use(passport.session())
 
@@ -51,7 +51,6 @@ const createApp = () => {
     if (!req.session.inbox) req.session.inbox = {}
     if (!req.session.basket) req.session.basket = []
     if (!req.session.inEscrow) req.session.inEscrow = []
-    console.log('req.session', req.session)
     next()
   })
   
@@ -88,12 +87,29 @@ const createApp = () => {
 // const configPort = config.get('port');
 // const configPort = 4001
 
-const PORT = (process.env.PORT || 4001);
+const findPort = async (startingPort) => {
+  let openPort; 
+  let status = await isPortAvailable(startingPort)
+  if (status) {
+    console.log('Port ' + startingPort + ' IS available!');
+    openPort = startingPort;
+  }
+  else {
+    console.log('Port ' + startingPort + ' IS NOT available!');
+    console.log('Reason : ' + isPortAvailable.lastError);
+    let nextPort = +startingPort + 1
+    openPort = findPort(nextPort)
+  };
+  return openPort
+}
 
-const startListening = () => {
+let port = (process.env.PORT || 4001);
+
+const startListening = (availablePort) => {
   // start listening (and create a 'server' object representing our server)
-  const server = app.listen(PORT, () => console.log(`Mixing it up on port ${PORT}`))
-
+  app.set('port', availablePort)
+  app.set('findPort', findPort)
+  const server = app.listen(availablePort, () => console.log(`Mixing it up on port ${availablePort}`))
 }
 
 const syncDb = () => db.sync()
@@ -106,14 +122,8 @@ if (require.main === module) {
   sessionStore.sync()
     .then(syncDb)
     .then(createApp)
-    .then(startListening)
+    .then(() => findPort(port))
+    .then(openPort => startListening(openPort))
 } else {
   createApp()
 }
-
-
-
-
-
-
-// app.listen(port, function () { console.log('Example app listening on port ' + port); });

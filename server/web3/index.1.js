@@ -2,7 +2,7 @@ const Web3 = require('web3');
 const net = require('net');
 const path = require('path');
 // const config = require('config');
-const compiledContract = require('../../truffle/build/contracts/PotluckToken.json');
+const compiledContract = require('../../contracts/contractv1.json');
 const router = require('express').Router()
 
 module.exports = router
@@ -39,7 +39,6 @@ router.use((req, res, next) => {
   const relIpc = req.body.currentUser.ipcAddr;
   ipcAddr = path.join(__dirname, relIpc, '/geth.ipc')
   web3 = new Web3(ipcAddr, net);
-  // web3.setProvider( new web3.providers.IpcProvider( '\\\\.\\pipe\\geth.ipc' ))
   coinbaseAddress = req.body.currentUser.cbAddr
 
   // I replaced the block below with the line above this one:
@@ -63,7 +62,7 @@ router.post('/', (req, res) => {
       .on('receipt', function (receipt) {
         console.log("Contract Address: " + receipt.contractAddress);
         res.json(receipt.contractAddress);
-        // save contract address, user1id, user2id from the item info
+ // save contract address, user1id, user2id from the item info
       });
   });
 });

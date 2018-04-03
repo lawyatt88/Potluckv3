@@ -1,6 +1,6 @@
 pragma solidity ^0.4.18;
 
-import "../node_modules/zeppelin-solidity/contracts/token/ERC721/ERC721Token.sol";
+import "../../node_modules/zeppelin-solidity/contracts/token/ERC721/ERC721Token.sol";
 
 contract PotluckToken is ERC721Token {
     function name() public pure returns (string) {

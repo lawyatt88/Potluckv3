@@ -11,76 +11,86 @@ let currentNode //to set apart the current user's working node
 
 router.post('/geth-start-script', (req, res, next) => {
   //check to see if the node is running
+  console.log('IN GETH API ROUTE', req.body.user)
+  const findPort = req.app.get('findPort')
+  const listeningPort = req.app.get('port')
+  
   if (!ipcAddresses.includes(req.body.user.ipcAddr)) {//declaring node geth instance
-    let inst = geth({
-      autoMine: true,
-      verbose: false, //for console log
-      gethOptions: {
-      datadir: `./nodeDir/${req.body.user.username}`,
-      networkid: 800,
-      port: req.body.user.port + 1,
-      rpcport: req.body.user.rpcport + 1,
-      nodiscover: false,
-      maxpeers: 100
-      },
-      genesisBlock: {
-        "alloc": {},
-        "config": {
-          "homesteadBlock": 0,
-          "chainID": 72,
-          "eip155Block": 0,
-          "eip158Block": 0
+    findPort(listeningPort)
+    .then(foundPort => {
+      return geth({
+        autoMine: true,
+        verbose: true, //for console log
+        gethOptions: {
+          datadir: `./nodeDir/${req.body.user.username}`,
+          networkid: 800,
+          port: foundPort,
+          rpcport: foundPort + 1,
+          nodiscover: false,
+          maxpeers: 100,
+          ipcpath: `${req.body.user.username}.ipc`
         },
-        "nonce": "0x0000000000000000",
-        "difficulty": "0x4000",
-        "mixhash": "0x0000000000000000000000000000000000000000000000000000000000000000",
-        "coinbase": "0x0000000000000000000000000000000000000000",
-        "timestamp": "0x00",
-        "parentHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
-        "extraData": "0x0000000000000000000000000000000000000000000000000000000000000000",
-        "gasLimit": "0xffffffff"
-      }
+        genesisBlock: {
+          "alloc": {},
+          "config": {
+            "homesteadBlock": 0,
+            "chainID": 72,
+            "eip155Block": 0,
+            "eip158Block": 0
+          },
+          "nonce": "0x0000000000000000",
+          "difficulty": "0x4000",
+          "mixhash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "coinbase": "0x0000000000000000000000000000000000000000",
+          "timestamp": "0x00",
+          "parentHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "extraData": "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "gasLimit": "0xffffffff"
+        }
+      })
     })
-    //Keeping track of what nodes have geth running for the sake of the other scripts
-    gethInstances.push({ipcAddr: path.normalize(req.body.user.ipcAddr), inst: inst})
-    ipcAddresses.push(path.normalize(req.body.user.ipcAddr))
+    .then(inst => {
+      //Keeping track of what nodes have geth running for the sake of the other scripts
+      gethInstances.push({ipcAddr: req.body.user.ipcAddr, inst: inst})
+      // console.log('gethInstances', gethInstances)
+      ipcAddresses.push(req.body.user.ipcAddr)
+      console.log('ipcAddresses', ipcAddresses)
+      currentNode = inst
+      return inst.start()
+    })
+    .then(() => console.log(`${req.body.user.username} has started geth.`))
+    .then(() => {
+      console.log(`${req.body.user.username} getting Account info...`)
+      // return currentNode.inst.consoleExec('eth.coinbase')
+      return currentNode.consoleExec('eth.coinbase')
+    })
+    .then(coinbase => {
+      coinbases.push(coinbase)
+      let cbAddr = coinbase.replace(/^"(.*)"$/, '$1')
+      //Make sure account in db is the same as the account of the running nodeor web3 will complain
+      User.update({cbAddr}, {
+        where: {
+          id: req.body.user.id
+        }
+      })
+      return currentNode.consoleExec('admin.nodeInfo.enode')
+    })
+    .then(enode => {
+      enodes.push(enode)
+      console.log("Starting to mine...")
+      currentNode.consoleExec('miner.start()')
+      res.json('Geth Script success')
+    })
+    .catch(err => console.error(err))
   }
-
   //always get node to start instance from our node array to ensure its not duplicate
-  currentNode = gethInstances.find(node => node.ipcAddr === req.body.user.ipcAddr)
+  // currentNode = gethInstances.find(node => node.ipcAddr === req.body.user.ipcAddr)
+  // console.log('currentNode', currentNode)
 
   //Starting the Geth instance
-  currentNode.inst.start()
-  .then(function() {
-    console.log(`${req.body.user.username} has started geth.`)
   })
-  .then(function() {
-    console.log(`${req.body.user.username} getting Account info...`)
-    return currentNode.inst.consoleExec('eth.coinbase')
-  })
-  .then(coinbase => {
-    coinbases.push(coinbase)
-    let cbAddr = coinbase.replace(/^"(.*)"$/, '$1')
-    //Make sure account in db is the same as the account of the running nodeor web3 will complain
-    User.update({cbAddr}, {
-      where: {
-        id: req.body.user.id
-      }
-    })
-    return currentNode.inst.consoleExec('admin.nodeInfo.enode')
-  })
-  .then( enode => {
-    enodes.push(enode)
 
-    console.log("Starting to mine...")
-     currentNode.inst.consoleExec('miner.start()')
-
-  })
-  .catch(function(err) {
-    console.error(err)
-  })
-  res.json('Geth Script success')
-})
+  
 
 
 /**
